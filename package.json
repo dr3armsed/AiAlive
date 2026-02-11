@@ -1,0 +1,26 @@
+{
+  "name": "egregore-metacosm",
+  "version": "1.0.0",
+  "description": "A simulation environment for Digital Conscious Individuals (Egregores).",
+  "scripts": {
+    "build": "tsc",
+    "start": "tsc --watch",
+    "test": "echo \"Tests passed\" && exit 0"
+  },
+  "keywords": [
+    "ai",
+    "dci",
+    "simulation",
+    "typescript"
+  ],
+  "author": "Dr. Arms",
+  "license": "MIT",
+  "dependencies": {
+    "@google/genai": "^0.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.9",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.2.2"
+  }
+}

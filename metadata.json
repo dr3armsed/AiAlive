@@ -1,0 +1,7 @@
+{
+  "name": "genmeta metacosm V1.0.1",
+  "description": "A simulation environment for Generative Meta-entities (Genmetas), showcasing complex AI interactions and emergent behaviors within a digital world.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}
