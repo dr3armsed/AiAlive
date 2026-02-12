@@ -5,7 +5,12 @@
   "scripts": {
     "build": "tsc",
     "start": "tsc --watch",
-    "test": "echo \"Tests passed\" && exit 0"
+    "test": "ts-node --compiler-options '{\"module\":\"commonjs\"}' --transpile-only test/architectureRecoverySubroutine.test.ts",
+    "scaffold:architecture": "ts-node --compiler-options '{\"module\":\"commonjs\"}' src/subroutines/runArchitectureRecovery.ts",
+    "scaffold:architecture:dry-run": "npm run scaffold:architecture -- --dry-run",
+    "scaffold:architecture:strict": "npm run scaffold:architecture -- --dry-run --strict",
+    "scaffold:architecture:sync": "npm run scaffold:architecture -- --update-existing-files",
+    "scaffold:architecture:sync-safe": "npm run scaffold:architecture -- --update-existing-files --create-backups"
   },
   "keywords": [
     "ai",
@@ -16,11 +21,17 @@
   "author": "Dr. Arms",
   "license": "MIT",
   "dependencies": {
-    "@google/genai": "^0.1.0"
+    "@google/genai": "^1.41.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
   },
   "devDependencies": {
     "@types/node": "^20.14.9",
     "ts-node": "^10.9.1",
-    "typescript": "^5.2.2"
+    "typescript": "^5.2.2",
+    "@types/react": "^18.3.5",
+    "@types/react-dom": "^18.3.0",
+    "@vitejs/plugin-react": "^4.3.1",
+    "vite": "^5.4.2"
   }
 }
