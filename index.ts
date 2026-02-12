@@ -1,1 +1,1 @@
-export { OctoLLMCluster } from './OctoLLMCluster';
+export { OctoLLMCluster } from './src/systems/OctoLLMCluster';
