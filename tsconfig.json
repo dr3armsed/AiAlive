@@ -14,8 +14,9 @@
     ]
   },
   "include": [
-    "src/**/*.ts",
-    "index.tsx",
-    "src/**/*.tsx"
+    "src/App.tsx",
+    "src/entry/index.tsx",
+    "src/config/**/*.ts",
+    "src/subroutines/**/*.ts"
   ]
 }
