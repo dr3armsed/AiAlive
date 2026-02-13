@@ -69,4 +69,4 @@ Representative files tracked:
 
 ## Progress assessment
 
-Overall progress is **good on cleanup and structure hygiene**, with improved visibility for previously parked assets via runtime manifest integration. Remaining work is **deeper behavioral integration** (binding the full legacy UI and Python subsystems into shared services). A first active vertical slice is now live in `src/App.tsx` via runtime tabs for Genesis, Private Worlds, and Creations.
+Overall progress is **good on cleanup and structure hygiene**, with improved visibility for previously parked assets via runtime manifest integration. Remaining work is **deeper behavioral integration** (binding the full legacy UI and Python subsystems into shared services). A first active vertical slice is now live in `src/App.tsx` via runtime tabs for Genesis, Conversation, Private Worlds, and Creations.

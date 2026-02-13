@@ -23,3 +23,11 @@ export interface RuntimeCreativeWork {
   authorId: string;
   createdAt: string;
 }
+
+export interface RuntimeMessage {
+  id: string;
+  egregoreId: string;
+  role: 'user' | 'egregore';
+  content: string;
+  timestamp: string;
+}
