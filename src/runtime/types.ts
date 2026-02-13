@@ -31,3 +31,23 @@ export interface RuntimeMessage {
   content: string;
   timestamp: string;
 }
+
+export interface RuntimeSubsystem {
+  id: string;
+  name: string;
+  status: 'online' | 'warming' | 'offline';
+}
+
+export interface RuntimeSystem {
+  id: string;
+  name: string;
+  status: 'online' | 'warming' | 'offline';
+  description: string;
+  subsystems: RuntimeSubsystem[];
+}
+
+export interface RuntimeTelemetry {
+  totalMessages: number;
+  unknownMessages: number;
+  lastDialogueSource: 'python-bridge' | 'local-fallback' | 'none';
+}

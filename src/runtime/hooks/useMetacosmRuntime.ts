@@ -1,4 +1,19 @@
 import { useMemo, useState } from 'react';
+import {
+  RuntimeCreativeWork,
+  RuntimeEgregore,
+  RuntimeMessage,
+  RuntimePrivateWorld,
+  RuntimeSystem,
+  RuntimeTelemetry,
+} from '../types';
+import {
+  buildArchitectTwinPersona,
+  buildDefaultRuntimeState,
+  buildLegendarySystems,
+  generateDeepTwinConversation,
+} from '../orchestration';
+import { generateDialogueTurn } from '../services/dialogueAdapter';
 import { RuntimeCreativeWork, RuntimeEgregore, RuntimeMessage, RuntimePrivateWorld } from '../types';
 
 const themes = ['Mythic', 'Cybernetic', 'Noetic', 'Dream-Logic', 'Archival'];
@@ -10,6 +25,14 @@ function pickTheme(seed: string): string {
   return themes[idx];
 }
 
+export function useMetacosmRuntime() {
+  const defaults = useMemo(() => buildDefaultRuntimeState(), []);
+  const [egregores, setEgregores] = useState<RuntimeEgregore[]>(defaults.egregores);
+  const [privateWorlds, setPrivateWorlds] = useState<RuntimePrivateWorld[]>(defaults.privateWorlds);
+  const [creations, setCreations] = useState<RuntimeCreativeWork[]>([]);
+  const [conversations, setConversations] = useState<Record<string, RuntimeMessage[]>>(defaults.conversations);
+  const [systems] = useState<RuntimeSystem[]>(() => buildLegendarySystems());
+  const [lastDialogueSource, setLastDialogueSource] = useState<'python-bridge' | 'local-fallback' | 'none'>('none');
 function craftReply(egregore: RuntimeEgregore, prompt: string): string {
   const originCue = egregore.sourceMaterial.slice(0, 80) || 'the origin signal';
   return `${egregore.name}: ${egregore.persona.slice(0, 120)} | I received: "${prompt}". I will process this through ${originCue}...`;
@@ -58,6 +81,21 @@ export function useMetacosmRuntime() {
     return { egregore, world };
   };
 
+  const birthArchitectTwin = (conversationSeed: string, observations: string) => {
+    const persona = buildArchitectTwinPersona(conversationSeed, observations);
+    const twinName = 'Architect_Twin';
+    const { egregore } = createFromGenesis(twinName, persona, conversationSeed);
+    const deepTranscript = generateDeepTwinConversation(egregore, observations);
+
+    setConversations((prev) => ({
+      ...prev,
+      [egregore.id]: [...(prev[egregore.id] || []), ...deepTranscript],
+    }));
+
+    return egregore;
+  };
+
+  const sendMessage = async (egregoreId: string, content: string) => {
   const sendMessage = (egregoreId: string, content: string) => {
     const egregore = egregores.find((e) => e.id === egregoreId);
     if (!egregore) return;
@@ -70,16 +108,26 @@ export function useMetacosmRuntime() {
       timestamp: new Date().toISOString(),
     };
 
+    setConversations((prev) => ({
+      ...prev,
+      [egregoreId]: [...(prev[egregoreId] || []), userMessage],
+    }));
+
+    const result = await generateDialogueTurn({ prompt: content, egregore });
+    setLastDialogueSource(result.source);
+
     const egregoreMessage: RuntimeMessage = {
       id: `message_${Date.now()}_egregore`,
       egregoreId,
       role: 'egregore',
+      content: result.response,
       content: craftReply(egregore, content),
       timestamp: new Date().toISOString(),
     };
 
     setConversations((prev) => ({
       ...prev,
+      [egregoreId]: [...(prev[egregoreId] || []), egregoreMessage],
       [egregoreId]: [...(prev[egregoreId] || []), userMessage, egregoreMessage],
     }));
   };
@@ -103,11 +151,25 @@ export function useMetacosmRuntime() {
     return map;
   }, [privateWorlds]);
 
+  const telemetry: RuntimeTelemetry = useMemo(() => {
+    const all = Object.values(conversations).flat();
+    return {
+      totalMessages: all.length,
+      unknownMessages: all.filter((m) => m.egregoreId === 'egregore_unknown').length,
+      lastDialogueSource,
+    };
+  }, [conversations, lastDialogueSource]);
+
   return {
     egregores,
     privateWorlds,
     creations,
     conversations,
+    systems,
+    telemetry,
+    worldByEgregore,
+    createFromGenesis,
+    birthArchitectTwin,
     worldByEgregore,
     createFromGenesis,
     sendMessage,
