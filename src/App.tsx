@@ -4,22 +4,12 @@ import { GenesisPanel } from './runtime/components/GenesisPanel';
 import { PrivateWorldsPanel } from './runtime/components/PrivateWorldsPanel';
 import { CreationsPanel } from './runtime/components/CreationsPanel';
 import { ConversationPanel } from './runtime/components/ConversationPanel';
-import { ArchitectTwinPanel } from './runtime/components/ArchitectTwinPanel';
-import { SystemsPanel } from './runtime/components/SystemsPanel';
 import { useMetacosmRuntime } from './runtime/hooks/useMetacosmRuntime';
 
-type Tab =
-  | 'genesis'
-  | 'architect-twin'
-  | 'conversation'
-  | 'private-worlds'
-  | 'creations'
-  | 'systems'
-  | 'integration';
+type Tab = 'genesis' | 'conversation' | 'private-worlds' | 'creations' | 'integration';
 
 export function App() {
-  const [activeTab, setActiveTab] = useState<Tab>('architect-twin');
-  const [latestTwinId, setLatestTwinId] = useState<string | undefined>(undefined);
+  const [activeTab, setActiveTab] = useState<Tab>('genesis');
   const categoryCounts = countByCategory();
   const runtime = useMetacosmRuntime();
 
@@ -27,30 +17,18 @@ export function App() {
     <main style={{ fontFamily: 'Inter, sans-serif', padding: '2rem', lineHeight: 1.5 }}>
       <h1>AiAlive Runtime Console</h1>
       <p>
-        Active slice now includes Architect Twin deep-conversation protocol and a legendary systems orchestration
-        layer, alongside Genesis, Conversation, Private Worlds, and Creations.
+        Active vertical slice now supports Genesis → Conversation → Private Worlds → Creations, while still tracking
+        legacy integration coverage.
       </p>
 
-      <nav style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem', flexWrap: 'wrap' }}>
-        <button onClick={() => setActiveTab('architect-twin')}>Architect Twin</button>
+      <nav style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem' }}>
         <button onClick={() => setActiveTab('genesis')}>Genesis</button>
         <button onClick={() => setActiveTab('conversation')}>Conversation</button>
         <button onClick={() => setActiveTab('private-worlds')}>Private Worlds</button>
         <button onClick={() => setActiveTab('creations')}>Creations</button>
-        <button onClick={() => setActiveTab('systems')}>Systems</button>
         <button onClick={() => setActiveTab('integration')}>Integration Manifest</button>
       </nav>
 
-      {activeTab === 'architect-twin' && (
-        <ArchitectTwinPanel
-          latestTwinId={latestTwinId}
-          onBirthTwin={(seed, observations) => {
-            const twin = runtime.birthArchitectTwin(seed, observations);
-            setLatestTwinId(twin.id);
-            setActiveTab('conversation');
-          }}
-        />
-      )}
       {activeTab === 'genesis' && <GenesisPanel onCreate={runtime.createFromGenesis} />}
       {activeTab === 'conversation' && (
         <ConversationPanel
@@ -65,7 +43,6 @@ export function App() {
       {activeTab === 'creations' && (
         <CreationsPanel creations={runtime.creations} egregores={runtime.egregores} onForge={runtime.forgeCreation} />
       )}
-      {activeTab === 'systems' && <SystemsPanel systems={runtime.systems} telemetry={runtime.telemetry} />}
 
       {activeTab === 'integration' && (
         <section>

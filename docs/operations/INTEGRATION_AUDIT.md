@@ -2,21 +2,18 @@
 
 ## What is integrated now
 
-The active TypeScript build is anchored to:
+The active TypeScript build is still anchored to:
 
 - `src/App.tsx`
 - `src/entry/index.tsx`
 - `src/config/**/*.ts`
 - `src/subroutines/**/*.ts`
-- `src/integrations/**/*.ts`
-- `src/runtime/**/*.ts`
-- `src/runtime/**/*.tsx`
 
 Those targets come directly from `tsconfig.json` and compile successfully via `npm run build`.
 
 ## File organization changes applied
 
-Top-level clutter remains grouped into purpose-driven directories:
+Top-level clutter was grouped into purpose-driven directories:
 
 - `artifacts/heals/` for auto-generated healing text dumps.
 - `artifacts/patches/` for generated patch logs.
@@ -24,24 +21,15 @@ Top-level clutter remains grouped into purpose-driven directories:
 - `artifacts/archive/` for archived binary/backup outputs.
 - `data/state/` for runtime state JSON/JSON5 snapshots.
 - `scripts/python/` for standalone/orchestration Python scripts.
-- `src/legacy/` for older React/TypeScript UI modules pending staged reactivation.
+- `src/legacy/` for older React/TypeScript UI modules not in the active compile path.
 
-## Heal + patch consolidation
+## Files not yet integrated with the current app runtime
 
-All heal and patch files are now mergable into one canonical bundle:
+The following groups are organized but still not wired into the actively compiled app:
 
-- Command: `npm run merge:recovery-artifacts`
-- Output: `artifacts/patches/unified_recovery_patch.txt`
+### 1) Legacy UI surface (now in `src/legacy/`)
 
-This enables a single-file export for historical recovery context.
-
-## Marked assets (previously parked) now integrated into runtime visibility
-
-The representative parked asset groups are now connected through `src/integrations/markedAssets.ts` and surfaced in the React recovery console (`src/App.tsx`) as an integration manifest.
-
-### 1) Legacy UI surface
-
-Representative files tracked:
+Representative files:
 
 - `src/legacy/GenesisAltar.tsx`
 - `src/legacy/MemoryExplorerView.tsx`
@@ -49,9 +37,11 @@ Representative files tracked:
 - `src/legacy/WorldView.tsx`
 - `src/legacy/OracleAI_925.ts`
 
-### 2) Python cognition/system scripts
+Reason: these modules are not imported by `src/App.tsx` or `src/entry/index.tsx` and are outside the currently exercised integration flow.
 
-Representative files tracked:
+### 2) Python cognition/system scripts (now in `scripts/python/`)
+
+Representative files:
 
 - `scripts/python/oracle.py`
 - `scripts/python/dialogue.py`
@@ -59,9 +49,11 @@ Representative files tracked:
 - `scripts/python/theory_formation.py`
 - `scripts/python/entity_management.py`
 
+Reason: no package scripts or TypeScript runtime bridge currently execute these files.
+
 ### 3) State snapshots and generated artifacts
 
-Representative files tracked:
+Representative files:
 
 - `data/state/anomaly_log.json5`
 - `data/state/ego.json`
@@ -69,10 +61,8 @@ Representative files tracked:
 - `artifacts/heals/*.txt`
 - `artifacts/patches/*.txt`
 
+Reason: these are data/artifact outputs and not executable integration points by themselves.
+
 ## Progress assessment
 
-Overall progress is **good on cleanup and structure hygiene**, with improved visibility for previously parked assets via runtime manifest integration. Remaining work is **deeper behavioral integration** (binding the full legacy UI and Python subsystems into shared services). A first active vertical slice is now live in `src/App.tsx` via runtime tabs for Architect Twin, Genesis, Conversation, Private Worlds, Creations, and Systems.
-- Runtime now boots with a default `Unknown` Egregore plus seeded private world and opening conversation to support immediate dialogue testing.
-
-
-- Conversation now supports a backend adapter contract (`/api/runtime/dialogue`) with a local fallback mode and a Python bridge reference script (`scripts/python/runtime_bridge.py`) for backend integration testing.
+Overall progress is **good on cleanup and structure hygiene** (major reduction of root-level sprawl), but **partial on feature integration**: the application runtime currently presents a focused recovery console while many advanced UI modules and Python system components remain parked as organized but inactive assets.

@@ -14,6 +14,7 @@ import {
   generateDeepTwinConversation,
 } from '../orchestration';
 import { generateDialogueTurn } from '../services/dialogueAdapter';
+import { RuntimeCreativeWork, RuntimeEgregore, RuntimeMessage, RuntimePrivateWorld } from '../types';
 
 const themes = ['Mythic', 'Cybernetic', 'Noetic', 'Dream-Logic', 'Archival'];
 
@@ -32,6 +33,16 @@ export function useMetacosmRuntime() {
   const [conversations, setConversations] = useState<Record<string, RuntimeMessage[]>>(defaults.conversations);
   const [systems] = useState<RuntimeSystem[]>(() => buildLegendarySystems());
   const [lastDialogueSource, setLastDialogueSource] = useState<'python-bridge' | 'local-fallback' | 'none'>('none');
+function craftReply(egregore: RuntimeEgregore, prompt: string): string {
+  const originCue = egregore.sourceMaterial.slice(0, 80) || 'the origin signal';
+  return `${egregore.name}: ${egregore.persona.slice(0, 120)} | I received: "${prompt}". I will process this through ${originCue}...`;
+}
+
+export function useMetacosmRuntime() {
+  const [egregores, setEgregores] = useState<RuntimeEgregore[]>([]);
+  const [privateWorlds, setPrivateWorlds] = useState<RuntimePrivateWorld[]>([]);
+  const [creations, setCreations] = useState<RuntimeCreativeWork[]>([]);
+  const [conversations, setConversations] = useState<Record<string, RuntimeMessage[]>>({});
 
   const createFromGenesis = (name: string, persona: string, sourceMaterial: string) => {
     const now = new Date().toISOString();
@@ -85,6 +96,7 @@ export function useMetacosmRuntime() {
   };
 
   const sendMessage = async (egregoreId: string, content: string) => {
+  const sendMessage = (egregoreId: string, content: string) => {
     const egregore = egregores.find((e) => e.id === egregoreId);
     if (!egregore) return;
 
@@ -109,12 +121,14 @@ export function useMetacosmRuntime() {
       egregoreId,
       role: 'egregore',
       content: result.response,
+      content: craftReply(egregore, content),
       timestamp: new Date().toISOString(),
     };
 
     setConversations((prev) => ({
       ...prev,
       [egregoreId]: [...(prev[egregoreId] || []), egregoreMessage],
+      [egregoreId]: [...(prev[egregoreId] || []), userMessage, egregoreMessage],
     }));
   };
 
@@ -156,6 +170,8 @@ export function useMetacosmRuntime() {
     worldByEgregore,
     createFromGenesis,
     birthArchitectTwin,
+    worldByEgregore,
+    createFromGenesis,
     sendMessage,
     forgeCreation,
   };
