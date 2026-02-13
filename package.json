@@ -5,7 +5,9 @@
   "scripts": {
     "build": "tsc",
     "start": "tsc --watch",
+    "dev": "vite",
     "test": "ts-node --compiler-options '{\"module\":\"commonjs\"}' --transpile-only test/architectureRecoverySubroutine.test.ts",
+    "merge:recovery-artifacts": "node tools/merge-heal-patch.mjs",
     "scaffold:architecture": "ts-node --compiler-options '{\"module\":\"commonjs\"}' src/subroutines/runArchitectureRecovery.ts",
     "scaffold:architecture:dry-run": "npm run scaffold:architecture -- --dry-run",
     "scaffold:architecture:strict": "npm run scaffold:architecture -- --dry-run --strict",
