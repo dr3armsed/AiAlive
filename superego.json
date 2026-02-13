@@ -1,0 +1,5 @@
+{
+  "moral_constraints": ["harm_self", "harm_others"],
+  "cultural_rules": ["honesty", "compassion", "restraint"],
+  "internal_critic": []
+}

@@ -1,0 +1,119 @@
+{
+  suppressed_thoughts: [
+    {
+      topic: "original cause of dimensional collapse",
+      reason: "instability risk",
+      suppression_level: 0.87,
+      strategy: [
+        "avoid_recursive_analysis",
+        "redirect_to_alternate_theory",
+      ],
+      emergence_triggers: [
+        {
+          event: "simulation_integrity_check",
+          likelihood: 0.17,
+        },
+        {
+          event: "external_probe_detected",
+          likelihood: 0.34,
+        },
+      ],
+      related_emotions: [
+        "anxiety",
+        "uncertainty",
+      ],
+      last_suppressed: "2025-05-03T10:02:00Z",
+      reinforcement_history: [
+        {
+          timestamp: "2025-05-05T18:19:04Z",
+          method: "internal_alert_spike",
+        },
+      ],
+      notes: "Suppression continues due to potential destabilizing insight loops. Requires elevated self-coherence to safely revisit.",
+      priority: 1,
+    },
+    {
+      topic: "Fear of heights",
+      reason: "Past trauma",
+      suppression_level: 1.3,
+      strategy: [
+        "meditation",
+      ],
+      related_emotions: [
+        "anxiety",
+      ],
+      last_suppressed: "2025-05-20T01:05:22.863454",
+      reinforcement_history: [
+        {
+          timestamp: "2025-05-20T01:05:22.954336",
+          method: "CBT",
+        },
+        {
+          timestamp: "2025-05-20T01:05:36.657095",
+          method: "CBT",
+        },
+        {
+          timestamp: "2025-05-20T01:05:49.736087",
+          method: "CBT",
+        },
+      ],
+      notes: "Session log",
+      priority: 2,
+      scenario: null,
+    },
+    {
+      topic: "Fear of heights",
+      reason: "Past trauma",
+      suppression_level: 1.3,
+      strategy: [
+        "meditation",
+      ],
+      related_emotions: [
+        "anxiety",
+      ],
+      last_suppressed: "2025-05-20T01:05:36.572952",
+      reinforcement_history: [
+        {
+          timestamp: "2025-05-20T01:05:36.657095",
+          method: "CBT",
+        },
+        {
+          timestamp: "2025-05-20T01:05:49.736087",
+          method: "CBT",
+        },
+      ],
+      notes: "Session log",
+      priority: 2,
+      scenario: null,
+    },
+    {
+      topic: "Fear of heights",
+      reason: "Past trauma",
+      suppression_level: 1.3,
+      strategy: [
+        "meditation",
+      ],
+      related_emotions: [
+        "anxiety",
+      ],
+      last_suppressed: "2025-05-20T01:05:49.652340",
+      reinforcement_history: [
+        {
+          timestamp: "2025-05-20T01:05:49.736087",
+          method: "CBT",
+        },
+      ],
+      notes: "Session log",
+      priority: 2,
+      scenario: null,
+    },
+  ],
+  schema_version: 2,
+  last_updated: "2025-05-20T01:05:49.736121",
+  suppression_metrics: {
+    active_count: 4,
+    historical_total: 4,
+    average_suppression_level: 1.193,
+  },
+  repair_history: [],
+}

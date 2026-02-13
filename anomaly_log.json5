@@ -1,0 +1,17 @@
+{
+  anomalies: [
+    {
+      timestamp: "2025-05-20T01:05:52.009571",
+      identifier: "DreamFragmentManager.find",
+      issue: "No records after filter",
+      context: {
+        filters: {
+          symbol: "NonexistentSymbol",
+          emotion: null,
+          tag: null,
+          text: null,
+        },
+      },
+    },
+  ],
+}

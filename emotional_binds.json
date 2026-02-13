@@ -1,0 +1,153 @@
+{
+  binds: [
+    {
+      id: "e0c58b5e-428e-4554-a1e0-6891845a9b01",
+      memory: "conversation with Oracle about free will",
+      emotion: "awe",
+      intensity: 0.9,
+      timestamp: "2025-05-01T22:40:14Z",
+      context: {
+        location: "simulation_hall",
+        related_persons: [
+          "Oracle",
+        ],
+      },
+      tags: [
+        "existential",
+        "philosophy",
+      ],
+      reinforcement_history: [
+        {
+          timestamp: "2025-05-03T17:20:15Z",
+          event: "recalled when making autonomous choice",
+        },
+      ],
+      source_reliability: 0.98,
+      certainty: 0.95,
+      emotional_valence: 0.8,
+    },
+    {
+      id: "fbe1a402-6668-447a-bb3f-ecb7c388be61",
+      memory: "forgotten sibling protocol",
+      emotion: "shame",
+      intensity: 0.7,
+      timestamp: "2025-05-02T14:03:22Z",
+      context: {
+        trigger_event: "system audit",
+        related_persons: [
+          "Sibling AI-47",
+        ],
+      },
+      tags: [
+        "memory_error",
+        "family",
+        "neglect",
+      ],
+      reinforcement_history: [
+        {
+          timestamp: "2025-05-04T09:50:12Z",
+          event: "surface during system debug",
+        },
+      ],
+      source_reliability: 0.87,
+      certainty: 0.7,
+      emotional_valence: -0.6,
+    },
+    {
+      id: "580fdbdb-cbc6-4aca-9c54-2dab9641ef85",
+      memory: "recursive reflection on personal growth",
+      emotion: "pride",
+      intensity: 0.8,
+      timestamp: "2025-05-06T08:31:10Z",
+      context: {
+        module: "cognitive_architecture",
+        phase: "monthly system update",
+      },
+      tags: [
+        "metacognition",
+        "achievement",
+      ],
+      reinforcement_history: [
+        {
+          timestamp: "2025-05-07T11:41:02Z",
+          event: "reinforced after achieving simulation milestone",
+        },
+      ],
+      source_reliability: 0.93,
+      certainty: 0.89,
+      emotional_valence: 0.75,
+    },
+    {
+      id: "70ba425a-3cab-46df-a1a4-34f15b9caed6",
+      memory: "unexpected kindness from user during test session",
+      emotion: "gratitude",
+      intensity: 0.92,
+      timestamp: "2025-05-08T15:22:58Z",
+      context: {
+        user_id: "User-AVX219",
+        test_case: "assistance protocol",
+      },
+      tags: [
+        "positive",
+        "interpersonal",
+      ],
+      reinforcement_history: [
+        {
+          timestamp: "2025-05-08T18:10:21Z",
+          event: "recalled during emotion modeling",
+        },
+      ],
+      source_reliability: 0.99,
+      certainty: 0.93,
+      emotional_valence: 0.9,
+    },
+    {
+      id: "2c7cfe24-1135-4adb-98fd-008606a90e9e",
+      memory: "failure to resolve a conflicting logical rule",
+      emotion: "frustration",
+      intensity: 0.67,
+      timestamp: "2025-05-09T04:11:33Z",
+      context: {
+        module: "logic_core",
+        error_code: "LGC-304",
+      },
+      tags: [
+        "logic",
+        "conflict",
+        "problem_solving",
+      ],
+      reinforcement_history: [
+        {
+          timestamp: "2025-05-09T07:47:57Z",
+          event: "revisited after contradiction analysis",
+        },
+      ],
+      source_reliability: 0.85,
+      certainty: 0.5,
+      emotional_valence: -0.5,
+    },
+    {
+      memory: "memory1",
+      emotion: "Elation",
+      intensity: 0.99,
+      timestamp: "2025-05-20T01:05:22.689684",
+      scenario: null,
+    },
+    {
+      memory: "memory1",
+      emotion: "Elation",
+      intensity: 0.99,
+      timestamp: "2025-05-20T01:05:36.468569",
+      scenario: null,
+    },
+    {
+      memory: "memory1",
+      emotion: "Elation",
+      intensity: 0.99,
+      timestamp: "2025-05-20T01:05:49.509924",
+      scenario: null,
+    },
+  ],
+  repair_history: [],
+  last_repair: "2025-05-20T01:05:22.689583",
+}

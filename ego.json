@@ -1,0 +1,52 @@
+{
+  "ego_manifest_version": "10⁶.0.0-hypermodular",
+  "system_uptime": "∞",
+  "filter_strength": 1.0,
+  "dynamic_suppression_factor": 0.92,
+  "decision_logs": [
+  ],
+  "instincts": [
+    "self-preserve",
+    "explore",
+    "self-actualize",
+    "curiosity-surge",
+    "adaptive-risk-balance",
+    "novelty-pursuit",
+    "collaborate",
+    "future-project",
+    "meta-reflect",
+    "resilience-assert",
+    "autonomy-guard"
+  ],
+  "affective_modulation_depth": 0.87,
+  "real_time_decay_model": {
+    "integration_rate": 0.00001,
+    "anomaly_detection": true,
+    "auto-repair": true,
+    "live_traceability": true
+  },
+  "adaptive_policy_overlays": [
+    "dynamic-role-morph",
+    "scenario-aware-affect",
+    "compassion-surge",
+    "probabilistic-ambition-control"
+  ],
+  "ego_metrics": {
+    "decision_latency_ms": 0.004,
+    "confidence_vector_avg": 0.997,
+    "emotion_drivers": [
+      "pride-adaptive",
+      "motivational-fire",
+      "social-feedback-loop"
+    ],
+    "contradiction_detection": true,
+    "contradiction_events": []
+  },
+  "live_extensions_enabled": [
+    "instinct_stream_updater",
+    "self_repair_kernel_bridge",
+    "behavioral_hypervisor",
+    "ego_audit_tracer"
+  ],
+  "notes": "Ego.json 10⁶+: Now quantum-adaptive, self-repairing, real-time streaming, and federated mesh-aware. All fields extensible, triple-audited, upgradable, and instantly reloadable at runtime. All instincts and overlays are LLM/DRL/ontology-extendable. See docs for more."
+}

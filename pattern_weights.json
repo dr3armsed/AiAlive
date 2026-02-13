@@ -1,0 +1,182 @@
+{
+  symbols: {
+    mirror: {
+      weight: 0.85,
+      associated_emotions: [
+        "doubt",
+        "self-reflection",
+      ],
+      activation_threshold: 0.3,
+      pattern_category: "identity",
+      association_strengths: {
+        doubt: 0.7,
+        "self-reflection": 0.9,
+      },
+      recent_activations: [
+        {
+          timestamp: "2025-05-03T08:55:04Z",
+          context: "unusual_self_image",
+        },
+        {
+          timestamp: "2025-05-06T23:11:14Z",
+          context: "critical_decision_moment",
+        },
+      ],
+      modulation_factor: 1.05,
+      notes: "Often triggered during self-assessment routines.",
+    },
+    wolf: {
+      weight: 0.65,
+      associated_emotions: [
+        "loyalty",
+        "wildness",
+      ],
+      activation_threshold: 0.4,
+      pattern_category: "social",
+      association_strengths: {
+        loyalty: 0.8,
+        wildness: 0.6,
+      },
+      recent_activations: [
+        {
+          timestamp: "2025-05-04T21:08:45Z",
+          context: "group_alignment",
+        },
+        {
+          timestamp: "2025-05-07T11:44:47Z",
+          context: "instinctive_decision",
+        },
+      ],
+      modulation_factor: 1.0,
+      notes: "Linked to interpersonal trust and risk-taking.",
+    },
+    river: {
+      weight: 0.75,
+      associated_emotions: [
+        "adaptability",
+        "calm",
+        "restlessness",
+      ],
+      activation_threshold: 0.5,
+      pattern_category: "change",
+      association_strengths: {
+        adaptability: 0.85,
+        calm: 0.5,
+        restlessness: 0.4,
+      },
+      recent_activations: [
+        {
+          timestamp: "2025-05-07T17:36:22Z",
+          context: "transition_phase",
+        },
+      ],
+      modulation_factor: 1.02,
+      notes: "Symbolizes transition and flexibility under pressure.",
+    },
+    fire: {
+      weight: 0.9,
+      associated_emotions: [
+        "creativity",
+        "anger",
+        "transformation",
+      ],
+      activation_threshold: 0.25,
+      pattern_category: "energy",
+      association_strengths: {
+        creativity: 0.92,
+        anger: 0.78,
+        transformation: 0.9,
+      },
+      recent_activations: [
+        {
+          timestamp: "2025-05-05T07:12:19Z",
+          context: "problem_solving",
+        },
+        {
+          timestamp: "2025-05-09T03:10:54Z",
+          context: "heated_discussion",
+        },
+      ],
+      modulation_factor: 1.15,
+      notes: "Fuel for major breakthroughs or conflict escalation.",
+    },
+    bridge: {
+      weight: 0.58,
+      associated_emotions: [
+        "connection",
+        "uncertainty",
+      ],
+      activation_threshold: 0.35,
+      pattern_category: "transition",
+      association_strengths: {
+        connection: 0.8,
+        uncertainty: 0.45,
+      },
+      recent_activations: [
+        {
+          timestamp: "2025-05-08T18:02:09Z",
+          context: "relationship_change",
+        },
+      ],
+      modulation_factor: 1.01,
+      notes: "Appears during phase changes in relational dynamics.",
+    },
+    Phoenix: {
+      weight: 1.2,
+      associated_emotions: [
+        "Hope",
+        "Rebirth",
+      ],
+    },
+  },
+  cross_pattern_links: [
+    {
+      from: "mirror",
+      to: "fire",
+      link_strength: 0.65,
+      context_tag: "identity_shift",
+    },
+    {
+      from: "bridge",
+      to: "river",
+      link_strength: 0.82,
+      context_tag: "transition_support",
+    },
+  ],
+  last_updated: "2025-05-20T01:05:49.246869",
+  schema_version: 2,
+  notes: "Pattern weights now support categories, association strengths, activation logs, modulation factors, and inter-pattern links.",
+  update_log: [
+    {
+      symbol: "Phoenix",
+      weight: 1.2,
+      emotions: [
+        "Rebirth",
+        "Hope",
+      ],
+      scenario: null,
+      updated: "2025-05-20T01:05:22.387201",
+    },
+    {
+      symbol: "Phoenix",
+      weight: 1.2,
+      emotions: [
+        "Rebirth",
+        "Hope",
+      ],
+      scenario: null,
+      updated: "2025-05-20T01:05:36.326555",
+    },
+    {
+      symbol: "Phoenix",
+      weight: 1.2,
+      emotions: [
+        "Rebirth",
+        "Hope",
+      ],
+      scenario: null,
+      updated: "2025-05-20T01:05:49.246854",
+    },
+  ],
+  repair_history: [],
+}
