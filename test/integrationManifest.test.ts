@@ -8,7 +8,6 @@ function testIntegrationManifestStatusModel() {
 
   const unintegrated = listUnintegratedAssets();
   assert.strictEqual(unintegrated.length, counts.tracked);
-  assert.ok(unintegrated.some((a) => a.path === 'scripts/python/dialogue.py'));
 
   const bridgeAsset = markedAssets.find((a) => a.path === 'scripts/python/runtime_bridge.py');
   assert.ok(bridgeAsset);
@@ -17,6 +16,14 @@ function testIntegrationManifestStatusModel() {
   const oracleAsset = markedAssets.find((a) => a.path === 'scripts/python/oracle.py');
   assert.ok(oracleAsset);
   assert.strictEqual(oracleAsset?.integration, 'integrated');
+
+  const dialogueAsset = markedAssets.find((a) => a.path === 'scripts/python/dialogue.py');
+  assert.ok(dialogueAsset);
+  assert.strictEqual(dialogueAsset?.integration, 'integrated');
+
+  const persistenceAsset = markedAssets.find((a) => a.path === 'scripts/python/persistence.py');
+  assert.ok(persistenceAsset);
+  assert.strictEqual(persistenceAsset?.integration, 'integrated');
 }
 
 function main() {
