@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import {
   DialogueSource,
   RuntimeCreativeWork,
+  RuntimeDialogueSignals,
   RuntimeEgregore,
   RuntimeMessage,
   RuntimePrivateWorld,
@@ -15,46 +16,36 @@ import {
   generateDeepTwinConversation,
 } from '../orchestration';
 import { generateDialogueTurn } from '../services/dialogueAdapter';
-import { RuntimeCreativeWork, RuntimeEgregore, RuntimeMessage, RuntimePrivateWorld } from '../types';
 
 const themes = ['Mythic', 'Cybernetic', 'Noetic', 'Dream-Logic', 'Archival'];
 
 function pickTheme(seed: string): string {
   const normalized = seed.trim();
   if (!normalized) return themes[0];
-  const idx = normalized.length % themes.length;
-  return themes[idx];
+  return themes[normalized.length % themes.length];
 }
 
 export function useMetacosmRuntime() {
-  const defaults = useMemo(() => buildDefaultRuntimeState(), []);
-  const [egregores, setEgregores] = useState<RuntimeEgregore[]>(defaults.egregores);
-  const [privateWorlds, setPrivateWorlds] = useState<RuntimePrivateWorld[]>(defaults.privateWorlds);
+  const initial = useMemo(() => buildDefaultRuntimeState(), []);
+  const [egregores, setEgregores] = useState<RuntimeEgregore[]>(initial.egregores);
+  const [privateWorlds, setPrivateWorlds] = useState<RuntimePrivateWorld[]>(initial.privateWorlds);
   const [creations, setCreations] = useState<RuntimeCreativeWork[]>([]);
-  const [conversations, setConversations] = useState<Record<string, RuntimeMessage[]>>(defaults.conversations);
-  const [systems] = useState<RuntimeSystem[]>(() => buildLegendarySystems());
+  const [conversations, setConversations] = useState<Record<string, RuntimeMessage[]>>(initial.conversations);
   const [lastDialogueSource, setLastDialogueSource] = useState<DialogueSource>('none');
-  const [lastSignals, setLastSignals] = useState<RuntimeTelemetry['lastSignals']>(null);
+  const [lastSignals, setLastSignals] = useState<RuntimeDialogueSignals | null>(null);
   const [lastLatencyMs, setLastLatencyMs] = useState<number | null>(null);
+  const [errorCount, setErrorCount] = useState(0);
   const [lastModel, setLastModel] = useState<string | null>(null);
   const [lastError, setLastError] = useState<string | null>(null);
-  const [errorCount, setErrorCount] = useState(0);
-  const [lastDialogueSource, setLastDialogueSource] = useState<'python-bridge' | 'local-fallback' | 'none'>('none');
-function craftReply(egregore: RuntimeEgregore, prompt: string): string {
-  const originCue = egregore.sourceMaterial.slice(0, 80) || 'the origin signal';
-  return `${egregore.name}: ${egregore.persona.slice(0, 120)} | I received: "${prompt}". I will process this through ${originCue}...`;
-}
 
-export function useMetacosmRuntime() {
-  const [egregores, setEgregores] = useState<RuntimeEgregore[]>([]);
-  const [privateWorlds, setPrivateWorlds] = useState<RuntimePrivateWorld[]>([]);
-  const [creations, setCreations] = useState<RuntimeCreativeWork[]>([]);
-  const [conversations, setConversations] = useState<Record<string, RuntimeMessage[]>>({});
+  const systems: RuntimeSystem[] = useMemo(() => buildLegendarySystems(), []);
 
   const createFromGenesis = (name: string, persona: string, sourceMaterial: string) => {
     const now = new Date().toISOString();
+    const idSeed = Date.now();
+
     const egregore: RuntimeEgregore = {
-      id: `egregore_${Date.now()}`,
+      id: `egregore_${idSeed}`,
       name,
       persona,
       sourceMaterial,
@@ -62,7 +53,7 @@ export function useMetacosmRuntime() {
     };
 
     const world: RuntimePrivateWorld = {
-      id: `world_${Date.now()}`,
+      id: `world_${idSeed}`,
       egregoreId: egregore.id,
       roomCount: Math.max(3, Math.min(12, Math.ceil(sourceMaterial.length / 180))),
       dominantTheme: pickTheme(`${name}${persona}${sourceMaterial}`),
@@ -70,20 +61,17 @@ export function useMetacosmRuntime() {
       createdAt: now,
     };
 
+    const awakening: RuntimeMessage = {
+      id: `message_${idSeed}_awake`,
+      egregoreId: egregore.id,
+      role: 'egregore',
+      content: `${egregore.name}: I awaken in this architecture.`,
+      timestamp: now,
+    };
+
     setEgregores((prev) => [egregore, ...prev]);
     setPrivateWorlds((prev) => [world, ...prev]);
-    setConversations((prev) => ({
-      ...prev,
-      [egregore.id]: [
-        {
-          id: `message_${Date.now()}`,
-          egregoreId: egregore.id,
-          role: 'egregore',
-          content: `${egregore.name}: I awaken in this architecture.`,
-          timestamp: now,
-        },
-      ],
-    }));
+    setConversations((prev) => ({ ...prev, [egregore.id]: [awakening] }));
 
     return { egregore, world };
   };
@@ -103,7 +91,6 @@ export function useMetacosmRuntime() {
   };
 
   const sendMessage = async (egregoreId: string, content: string) => {
-  const sendMessage = (egregoreId: string, content: string) => {
     const egregore = egregores.find((e) => e.id === egregoreId);
     if (!egregore) return;
 
@@ -124,10 +111,11 @@ export function useMetacosmRuntime() {
     setLastDialogueSource(result.source);
     setLastSignals(result.signals);
     setLastLatencyMs(result.latencyMs);
-    setLastModel(result.model ?? null);
+    setLastModel(result.model);
+
     if (result.error) {
-      setLastError(result.error);
       setErrorCount((prev) => prev + 1);
+      setLastError(result.error);
     } else {
       setLastError(null);
     }
@@ -137,14 +125,12 @@ export function useMetacosmRuntime() {
       egregoreId,
       role: 'egregore',
       content: result.response,
-      content: craftReply(egregore, content),
       timestamp: new Date().toISOString(),
     };
 
     setConversations((prev) => ({
       ...prev,
       [egregoreId]: [...(prev[egregoreId] || []), egregoreMessage],
-      [egregoreId]: [...(prev[egregoreId] || []), userMessage, egregoreMessage],
     }));
   };
 
@@ -179,9 +165,7 @@ export function useMetacosmRuntime() {
       lastModel,
       lastError,
     };
-  }, [conversations, lastDialogueSource, lastSignals, lastLatencyMs, errorCount, lastModel, lastError]);
-    };
-  }, [conversations, lastDialogueSource]);
+  }, [conversations, errorCount, lastDialogueSource, lastError, lastLatencyMs, lastModel, lastSignals]);
 
   return {
     egregores,
@@ -193,8 +177,6 @@ export function useMetacosmRuntime() {
     worldByEgregore,
     createFromGenesis,
     birthArchitectTwin,
-    worldByEgregore,
-    createFromGenesis,
     sendMessage,
     forgeCreation,
   };
