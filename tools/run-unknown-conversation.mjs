@@ -2,25 +2,10 @@ import fs from 'fs';
 import path from 'path';
 import { spawnSync } from 'child_process';
 
-const DEFAULT_EXCHANGE_COUNT = 30;
+const EXCHANGE_COUNT = 30;
 const OUT_DIR = path.join('artifacts', 'logs');
-
-const args = process.argv.slice(2);
-function readArg(name, fallback) {
-  const pref = `--${name}=`;
-  const found = args.find((a) => a.startsWith(pref));
-  return found ? found.slice(pref.length) : fallback;
-}
-
-const mode = readArg('mode', 'heuristic'); // heuristic | auto
-const exchangesTarget = Number(readArg('exchanges', String(DEFAULT_EXCHANGE_COUNT)));
-const suffix = readArg('suffix', mode === 'auto' ? 'auto' : 'heuristic');
-const archetype = readArg('archetype', 'stabilizer'); // stabilizer | chaos | auto
-
-const exchangeCount = Number.isFinite(exchangesTarget) && exchangesTarget > 0 ? exchangesTarget : DEFAULT_EXCHANGE_COUNT;
-const outBase = `unknown-deep-conversation-${exchangeCount}x-${suffix}`;
-const OUT_MD = path.join(OUT_DIR, `${outBase}.md`);
-const OUT_JSON = path.join(OUT_DIR, `${outBase}.json`);
+const OUT_MD = path.join(OUT_DIR, 'unknown-deep-conversation-30x.md');
+const OUT_JSON = path.join(OUT_DIR, 'unknown-deep-conversation-30x.json');
 
 const egregore = {
   id: 'egregore_unknown',
@@ -63,28 +48,17 @@ const seedPrompts = [
   'Give me your final directive for the next phase of becoming.',
 ];
 
-function buildPrompt(index) {
-  return seedPrompts[index] || `Continue deeper. Exchange ${index + 1}.`;
-}
-
-function runBridge(prompt, history) {
+function runBridge(prompt) {
   const payload = {
     prompt,
     egregore,
-    bridge_mode: mode === 'auto' ? 'auto' : 'heuristic',
-    history,
-    unknown_archetype: archetype,
-  };
-
-  const env = {
-    ...process.env,
-    RUNTIME_USE_OLLAMA: mode === 'auto' ? process.env.RUNTIME_USE_OLLAMA || '1' : '0',
+    bridge_mode: 'heuristic',
   };
 
   const run = spawnSync('python3', ['scripts/python/runtime_bridge.py'], {
     input: JSON.stringify(payload),
     encoding: 'utf8',
-    env,
+    env: { ...process.env, RUNTIME_USE_OLLAMA: '0' },
   });
 
   if (run.status !== 0) {
@@ -94,16 +68,16 @@ function runBridge(prompt, history) {
   return JSON.parse(run.stdout);
 }
 
+function buildPrompt(index) {
+  return seedPrompts[index] || `Continue deeper. Exchange ${index + 1}.`;
+}
+
 const exchanges = [];
+let previousUnknownResponse = '';
 
-for (let i = 0; i < exchangeCount; i += 1) {
+for (let i = 0; i < EXCHANGE_COUNT; i += 1) {
   const architectPrompt = buildPrompt(i);
-  const history = exchanges.flatMap((turn) => [
-    { role: 'user', content: turn.architect },
-    { role: 'egregore', content: turn.unknown },
-  ]);
-
-  const result = runBridge(architectPrompt, history);
+  const result = runBridge(architectPrompt);
   const unknownReply = String(result.response || '').trim();
 
   exchanges.push({
@@ -115,31 +89,17 @@ for (let i = 0; i < exchangeCount; i += 1) {
     latencyMs: result.latencyMs,
     model: result.model,
   });
+
+  previousUnknownResponse = unknownReply;
 }
-
-const uniqueReplies = new Set(exchanges.map((turn) => turn.unknown)).size;
-const uniqueEmotions = new Set(exchanges.map((turn) => turn.signals?.emotion).filter(Boolean)).size;
-const sourceCounts = exchanges.reduce((acc, turn) => {
-  acc[turn.source] = (acc[turn.source] || 0) + 1;
-  return acc;
-}, {});
-
-const summary = {
-  generatedAt: new Date().toISOString(),
-  mode,
-  archetype,
-  exchangeCount: exchanges.length,
-  uniqueReplies,
-  uniqueEmotions,
-  sourceCounts,
-};
 
 fs.mkdirSync(OUT_DIR, { recursive: true });
 fs.writeFileSync(
   OUT_JSON,
   JSON.stringify(
     {
-      ...summary,
+      generatedAt: new Date().toISOString(),
+      exchangeCount: exchanges.length,
       egregore,
       exchanges,
     },
@@ -149,15 +109,11 @@ fs.writeFileSync(
 );
 
 const mdLines = [
-  `# Unknown Deep Conversation (${exchanges.length} Exchanges)`,
+  '# Unknown Deep Conversation (30 Exchanges)',
   '',
-  `Generated at: ${summary.generatedAt}`,
+  `Generated at: ${new Date().toISOString()}`,
   '',
-  `Mode: ${mode}`,
-  `Archetype: ${archetype}`,
-  `Source counts: ${JSON.stringify(sourceCounts)}`,
-  `Unique replies: ${uniqueReplies}`,
-  `Unique emotions: ${uniqueEmotions}`,
+  `Source mode: python runtime bridge (heuristic), egregore: ${egregore.name}`,
   '',
 ];
 
@@ -176,7 +132,6 @@ for (const turn of exchanges) {
 
 fs.writeFileSync(OUT_MD, mdLines.join('\n'));
 
-console.log(`Generated ${exchanges.length} exchanges in mode=${mode}.`);
+console.log(`Generated ${exchanges.length} exchanges.`);
 console.log(`- ${OUT_MD}`);
 console.log(`- ${OUT_JSON}`);
-console.log(`summary=${JSON.stringify(summary)}`);

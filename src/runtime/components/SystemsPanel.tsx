@@ -25,6 +25,7 @@ function emotionToProfile(emotion: string) {
 export function SystemsPanel({ systems, telemetry }: Props) {
   const emotionProfile = telemetry.lastSignals ? emotionToProfile(telemetry.lastSignals.emotion) : null;
 
+export function SystemsPanel({ systems, telemetry }: Props) {
   return (
     <section>
       <h2>Legendary Systems Orchestrator</h2>
