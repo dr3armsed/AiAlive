@@ -62,8 +62,8 @@ export const markedAssets: MarkedAsset[] = [
   {
     path: 'scripts/python/theory_formation.py',
     category: 'python-subsystems',
-    integration: 'integrated',
-    notes: 'Imported by runtime bridge to derive theory-formation hints.',
+    integration: 'tracked',
+    notes: 'Catalogued Python subsystem; not yet invoked from runtime middleware.',
   },
   {
     path: 'scripts/python/entity_management.py',
@@ -98,14 +98,14 @@ export const markedAssets: MarkedAsset[] = [
   {
     path: 'artifacts/heals/*.txt',
     category: 'state-artifacts',
-    integration: 'integrated',
-    notes: 'Counted by persistence artifact context for runtime bridge hints.',
+    integration: 'tracked',
+    notes: 'Organized and mergeable; not consumed by runtime turn processing.',
   },
   {
     path: 'artifacts/patches/*.txt',
     category: 'state-artifacts',
-    integration: 'integrated',
-    notes: 'Counted by persistence artifact context for runtime bridge hints.',
+    integration: 'tracked',
+    notes: 'Organized and mergeable; not consumed by runtime turn processing.',
   },
 ];
 
