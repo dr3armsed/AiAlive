@@ -1,0 +1,4 @@
+{
+  "issue": "Empty text segment detected.",
+  "timestamp": 1758146380.2085938
+}
