@@ -24,6 +24,13 @@ export function App() {
   const categoryCounts = countByCategory();
   const integrationCounts = countByIntegration();
   const unintegrated = listUnintegratedAssets();
+
+export function App() {
+  const [activeTab, setActiveTab] = useState<Tab>('architect-twin');
+  const [latestTwinId, setLatestTwinId] = useState<string | undefined>(undefined);
+  const categoryCounts = countByCategory();
+  const integrationCounts = countByIntegration();
+  const unintegrated = listUnintegratedAssets();
 import { useMetacosmRuntime } from './runtime/hooks/useMetacosmRuntime';
 
 type Tab = 'genesis' | 'conversation' | 'private-worlds' | 'creations' | 'integration';
