@@ -4,12 +4,14 @@ import { RuntimeEgregore, RuntimeMessage } from '../types';
 interface Props {
   egregores: RuntimeEgregore[];
   conversations: Record<string, RuntimeMessage[]>;
+  onSend: (egregoreId: string, content: string) => Promise<void>;
   onSend: (egregoreId: string, content: string) => void;
 }
 
 export function ConversationPanel({ egregores, conversations, onSend }: Props) {
   const [selectedEgregoreId, setSelectedEgregoreId] = useState('');
   const [draft, setDraft] = useState('');
+  const [isSending, setIsSending] = useState(false);
 
   const selectedEgregore = useMemo(
     () => egregores.find((e) => e.id === selectedEgregoreId),
@@ -62,6 +64,15 @@ export function ConversationPanel({ egregores, conversations, onSend }: Props) {
               placeholder="Send a message to the selected Egregore"
             />
             <button
+              disabled={isSending || !selectedEgregoreId || draft.trim().length < 2}
+              onClick={async () => {
+                setIsSending(true);
+                await onSend(selectedEgregoreId, draft.trim());
+                setDraft('');
+                setIsSending(false);
+              }}
+            >
+              {isSending ? 'Sending...' : 'Send Message'}
               disabled={!selectedEgregoreId || draft.trim().length < 2}
               onClick={() => {
                 onSend(selectedEgregoreId, draft.trim());

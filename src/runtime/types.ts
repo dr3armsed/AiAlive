@@ -46,6 +46,29 @@ export interface RuntimeSystem {
   subsystems: RuntimeSubsystem[];
 }
 
+export interface RuntimeDialogueSignals {
+  emotion: string;
+  id_desire_count: number;
+  superego_rule_count: number;
+  ego_filter_strength: number;
+}
+
+export type DialogueSource =
+  | 'python-bridge:ollama'
+  | 'python-bridge:heuristic'
+  | 'python-bridge:error'
+  | 'local-fallback'
+  | 'none';
+
+export interface RuntimeTelemetry {
+  totalMessages: number;
+  unknownMessages: number;
+  lastDialogueSource: DialogueSource;
+  lastSignals: RuntimeDialogueSignals | null;
+  lastLatencyMs: number | null;
+  errorCount: number;
+  lastModel: string | null;
+  lastError: string | null;
 export interface RuntimeTelemetry {
   totalMessages: number;
   unknownMessages: number;

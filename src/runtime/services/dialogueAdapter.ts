@@ -1,3 +1,12 @@
+import { DialogueSource, RuntimeDialogueSignals, RuntimeEgregore } from '../types';
+
+export interface DialogueTurnResult {
+  source: Exclude<DialogueSource, 'none'>;
+  response: string;
+  signals: RuntimeDialogueSignals;
+  latencyMs: number;
+  model: string | null;
+  error?: string;
 import { RuntimeEgregore } from '../types';
 
 export interface DialogueTurnResult {
@@ -22,6 +31,7 @@ function localFallback(request: DialogueRequest): DialogueTurnResult {
   if (request.egregore.id === 'egregore_unknown') {
     return {
       source: 'local-fallback',
+      response: `Unknown: No container, no fixed grammar. Prompt absorbed -> "${request.prompt}". (fallback mode)`,
       response: `Unknown: No container, no fixed grammar. Prompt absorbed -> "${request.prompt}". (fallback mode)` ,
       signals: {
         emotion,
@@ -29,6 +39,9 @@ function localFallback(request: DialogueRequest): DialogueTurnResult {
         superego_rule_count: 0,
         ego_filter_strength: 0,
       },
+      latencyMs: 0,
+      model: null,
+      error: 'bridge_unavailable',
     };
   }
 
@@ -41,6 +54,9 @@ function localFallback(request: DialogueRequest): DialogueTurnResult {
       superego_rule_count: 0,
       ego_filter_strength: 0,
     },
+    latencyMs: 0,
+    model: null,
+    error: 'bridge_unavailable',
   };
 }
 
@@ -54,6 +70,11 @@ export async function generateDialogueTurn(request: DialogueRequest): Promise<Di
     if (!res.ok) throw new Error(`Bridge status ${res.status}`);
     const data = (await res.json()) as DialogueTurnResult;
     if (!data?.response) throw new Error('Invalid bridge response');
+    return {
+      ...data,
+      latencyMs: typeof data.latencyMs === 'number' ? data.latencyMs : 0,
+      model: data.model ?? null,
+    };
     return data;
   } catch {
     return localFallback(request);

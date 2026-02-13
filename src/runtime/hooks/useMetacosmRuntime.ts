@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import {
+  DialogueSource,
   RuntimeCreativeWork,
   RuntimeEgregore,
   RuntimeMessage,
@@ -32,6 +33,12 @@ export function useMetacosmRuntime() {
   const [creations, setCreations] = useState<RuntimeCreativeWork[]>([]);
   const [conversations, setConversations] = useState<Record<string, RuntimeMessage[]>>(defaults.conversations);
   const [systems] = useState<RuntimeSystem[]>(() => buildLegendarySystems());
+  const [lastDialogueSource, setLastDialogueSource] = useState<DialogueSource>('none');
+  const [lastSignals, setLastSignals] = useState<RuntimeTelemetry['lastSignals']>(null);
+  const [lastLatencyMs, setLastLatencyMs] = useState<number | null>(null);
+  const [lastModel, setLastModel] = useState<string | null>(null);
+  const [lastError, setLastError] = useState<string | null>(null);
+  const [errorCount, setErrorCount] = useState(0);
   const [lastDialogueSource, setLastDialogueSource] = useState<'python-bridge' | 'local-fallback' | 'none'>('none');
 function craftReply(egregore: RuntimeEgregore, prompt: string): string {
   const originCue = egregore.sourceMaterial.slice(0, 80) || 'the origin signal';
@@ -115,6 +122,15 @@ export function useMetacosmRuntime() {
 
     const result = await generateDialogueTurn({ prompt: content, egregore });
     setLastDialogueSource(result.source);
+    setLastSignals(result.signals);
+    setLastLatencyMs(result.latencyMs);
+    setLastModel(result.model ?? null);
+    if (result.error) {
+      setLastError(result.error);
+      setErrorCount((prev) => prev + 1);
+    } else {
+      setLastError(null);
+    }
 
     const egregoreMessage: RuntimeMessage = {
       id: `message_${Date.now()}_egregore`,
@@ -157,6 +173,13 @@ export function useMetacosmRuntime() {
       totalMessages: all.length,
       unknownMessages: all.filter((m) => m.egregoreId === 'egregore_unknown').length,
       lastDialogueSource,
+      lastSignals,
+      lastLatencyMs,
+      errorCount,
+      lastModel,
+      lastError,
+    };
+  }, [conversations, lastDialogueSource, lastSignals, lastLatencyMs, errorCount, lastModel, lastError]);
     };
   }, [conversations, lastDialogueSource]);
 
