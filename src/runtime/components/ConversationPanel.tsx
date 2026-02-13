@@ -5,6 +5,7 @@ interface Props {
   egregores: RuntimeEgregore[];
   conversations: Record<string, RuntimeMessage[]>;
   onSend: (egregoreId: string, content: string) => Promise<void>;
+  onSend: (egregoreId: string, content: string) => void;
 }
 
 export function ConversationPanel({ egregores, conversations, onSend }: Props) {
@@ -72,6 +73,13 @@ export function ConversationPanel({ egregores, conversations, onSend }: Props) {
               }}
             >
               {isSending ? 'Sending...' : 'Send Message'}
+              disabled={!selectedEgregoreId || draft.trim().length < 2}
+              onClick={() => {
+                onSend(selectedEgregoreId, draft.trim());
+                setDraft('');
+              }}
+            >
+              Send Message
             </button>
           </div>
         </>

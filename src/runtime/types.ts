@@ -69,4 +69,8 @@ export interface RuntimeTelemetry {
   errorCount: number;
   lastModel: string | null;
   lastError: string | null;
+export interface RuntimeTelemetry {
+  totalMessages: number;
+  unknownMessages: number;
+  lastDialogueSource: 'python-bridge' | 'local-fallback' | 'none';
 }

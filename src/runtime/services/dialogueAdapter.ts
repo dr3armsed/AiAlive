@@ -7,6 +7,17 @@ export interface DialogueTurnResult {
   latencyMs: number;
   model: string | null;
   error?: string;
+import { RuntimeEgregore } from '../types';
+
+export interface DialogueTurnResult {
+  source: 'python-bridge' | 'local-fallback';
+  response: string;
+  signals: {
+    emotion: string;
+    id_desire_count: number;
+    superego_rule_count: number;
+    ego_filter_strength: number;
+  };
 }
 
 interface DialogueRequest {
@@ -21,6 +32,7 @@ function localFallback(request: DialogueRequest): DialogueTurnResult {
     return {
       source: 'local-fallback',
       response: `Unknown: No container, no fixed grammar. Prompt absorbed -> "${request.prompt}". (fallback mode)`,
+      response: `Unknown: No container, no fixed grammar. Prompt absorbed -> "${request.prompt}". (fallback mode)` ,
       signals: {
         emotion,
         id_desire_count: 0,
@@ -63,6 +75,7 @@ export async function generateDialogueTurn(request: DialogueRequest): Promise<Di
       latencyMs: typeof data.latencyMs === 'number' ? data.latencyMs : 0,
       model: data.model ?? null,
     };
+    return data;
   } catch {
     return localFallback(request);
   }

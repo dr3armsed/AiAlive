@@ -3,6 +3,7 @@
 ## What is integrated now
 
 The active TypeScript build is anchored to:
+The active TypeScript build is still anchored to:
 
 - `src/App.tsx`
 - `src/entry/index.tsx`
@@ -17,6 +18,7 @@ Those targets come directly from `tsconfig.json` and compile successfully via `n
 ## File organization changes applied
 
 Top-level clutter remains grouped into purpose-driven directories:
+Top-level clutter was grouped into purpose-driven directories:
 
 - `artifacts/heals/` for auto-generated healing text dumps.
 - `artifacts/patches/` for generated patch logs.
@@ -51,6 +53,15 @@ The representative parked asset groups are now connected through `src/integratio
 ### 1) Legacy UI surface
 
 Representative files tracked:
+- `src/legacy/` for older React/TypeScript UI modules not in the active compile path.
+
+## Files not yet integrated with the current app runtime
+
+The following groups are organized but still not wired into the actively compiled app:
+
+### 1) Legacy UI surface (now in `src/legacy/`)
+
+Representative files:
 
 - `src/legacy/GenesisAltar.tsx`
 - `src/legacy/MemoryExplorerView.tsx`
@@ -61,6 +72,11 @@ Representative files tracked:
 ### 2) Python cognition/system scripts
 
 Representative files tracked:
+Reason: these modules are not imported by `src/App.tsx` or `src/entry/index.tsx` and are outside the currently exercised integration flow.
+
+### 2) Python cognition/system scripts (now in `scripts/python/`)
+
+Representative files:
 
 - `scripts/python/oracle.py`
 - `scripts/python/dialogue.py`
@@ -72,6 +88,12 @@ Representative files tracked:
 ### 3) State snapshots and generated artifacts
 
 Representative files tracked:
+
+Reason: no package scripts or TypeScript runtime bridge currently execute these files.
+
+### 3) State snapshots and generated artifacts
+
+Representative files:
 
 - `data/state/anomaly_log.json5`
 - `data/state/ego.json`
@@ -92,3 +114,8 @@ Integrated state files currently used by runtime dialogue signals: `data/state/e
 ## Progress assessment
 
 Overall progress is **strong on cleanup, runtime visibility, and one end-to-end conversation vertical**. The stack now has a usable front-end runtime shell, a dev API route, Python bridge execution, fallback handling, and telemetry. The next high-leverage step is staged migration of legacy modules into active runtime service contracts so the manifest transitions from “tracked” to “executing.”
+Reason: these are data/artifact outputs and not executable integration points by themselves.
+
+## Progress assessment
+
+Overall progress is **good on cleanup and structure hygiene** (major reduction of root-level sprawl), but **partial on feature integration**: the application runtime currently presents a focused recovery console while many advanced UI modules and Python system components remain parked as organized but inactive assets.
