@@ -2,36 +2,24 @@
 
 ## Current top-level state
 
-The repository has been organized into domain-oriented folders for docs, source modules, data, and archives.
+The repository is now grouped by role: executable app code, legacy UI/code, runtime data, generated artifacts, docs, and scripts.
 
 ## Implemented structure
 
 ```text
 AiAlive/
-├── archive/
-│   └── src.zip
+├── artifacts/
+│   ├── archive/
+│   ├── heals/
+│   ├── logs/
+│   └── patches/
 ├── data/
-│   ├── metadata.json
-│   └── the log.txt
+│   └── state/
 ├── docs/
 │   ├── architecture/
-│   │   ├── BRAIN_SYSTEM_INTEGRATION.md
-│   │   ├── ORACLE_SYSTEM_INTEGRATED.md
-│   │   ├── THEORY_FORMATION_INTEGRATION.md
-│   │   ├── TRI_SPHERE_ARCHITECTURE.md
-│   │   └── TRI_SPHERE_INTEGRATION.md
-│   ├── biology-model/
-│   │   ├── DNA_SUBSTRATE_ANALYSIS.md
-│   │   └── NCRNA_IMPLEMENTATION_SUMMARY.md
-│   ├── operations/
-│   │   ├── ARCHITECTURE_RECOVERY_USAGE.md
-│   │   ├── EXTERNAL_DRIVE_PORTABLE_GUIDE.md
-│   │   └── PYTHON_BACKEND_SETUP.md
-│   ├── plans/
-│   │   └── DISTRIBUTED_SYNAPTIC_HARVEST_PLAN.md
-│   └── product/
-│       ├── CONTENT_CREATION_CAPABILITIES.md
-│       └── CONTENT_CREATION_COMPLETE.md
+│   └── operations/
+├── scripts/
+│   └── python/
 ├── src/
 │   ├── agent/
 │   ├── biology/
@@ -40,6 +28,7 @@ AiAlive/
 │   ├── core/
 │   ├── emotion/
 │   ├── entry/
+│   ├── legacy/
 │   ├── models/
 │   ├── subroutines/
 │   └── systems/
@@ -52,7 +41,9 @@ AiAlive/
 
 ## Ongoing conventions
 
-- Keep TypeScript modules under `src/` by domain.
-- Keep architecture/product/ops references under `docs/`.
-- Keep generated or historical artifacts in `archive/` and `data/`.
-- When adding new folders, update `src/config/architectureBlueprint.ts` as needed.
+- Keep active TypeScript application modules under `src/` domain folders.
+- Keep inactive/older UI modules in `src/legacy/` until integrated.
+- Keep generated recovery artifacts in `artifacts/` by artifact type.
+- Keep runtime JSON/JSON5 state dumps in `data/state/`.
+- Keep standalone Python orchestration/research scripts in `scripts/python/`.
+- Keep architecture and operational references under `docs/`.
