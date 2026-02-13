@@ -26,19 +26,6 @@ def derive_emotion(prompt: str) -> str:
     return "focused"
 
 
-def derive_theory_hint(prompt: str, emotion: str) -> str:
-    text = (prompt or "").lower()
-    corpus_present = os.path.exists("scripts/python/theory_formation.py")
-    base = "theory-corpus-present" if corpus_present else "theory-corpus-missing"
-    if any(token in text for token in ["why", "cause", "because", "explain"]):
-        return f"{base}:causal-modeling"
-    if any(token in text for token in ["future", "next", "trend", "forecast"]):
-        return f"{base}:scenario-extrapolation"
-    if emotion == "vigilant":
-        return f"{base}:risk-boundary-analysis"
-    return f"{base}:adaptive-hypothesis"
-
-
 def resolve_oracle_hint(prompt: str) -> Optional[str]:
     if DecisionMatrix is None:
         return None
@@ -84,14 +71,6 @@ def error_result(reason: str, started: float) -> Dict[str, Any]:
     }
 
 
-def build_artifact_hint(state: Dict[str, Dict[str, Any]]) -> str:
-    artifacts = state.get("artifacts", {})
-    heal_count = int(artifacts.get("heal_count", 0) or 0)
-    patch_count = int(artifacts.get("patch_count", 0) or 0)
-    has_unified = bool(artifacts.get("has_unified_patch", False))
-    return f"heals={heal_count},patches={patch_count},unified={str(has_unified).lower()}"
-
-
 def main() -> None:
     started = time.perf_counter()
     raw = sys.stdin.read().strip()
@@ -114,8 +93,6 @@ def main() -> None:
 
     emotion = derive_emotion(prompt)
     oracle_hint = resolve_oracle_hint(prompt)
-    theory_hint = derive_theory_hint(prompt, emotion)
-    artifact_hint = build_artifact_hint(state)
 
     response = compose_dialogue_response(
         name=name,
@@ -126,8 +103,6 @@ def main() -> None:
         superego_rules=len(moral),
         ego_filter=filter_strength,
         oracle_hint=oracle_hint,
-        theory_hint=theory_hint,
-        artifact_hint=artifact_hint,
     )
 
     elapsed_ms = int((time.perf_counter() - started) * 1000)
