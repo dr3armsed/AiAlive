@@ -1,0 +1,24 @@
+/**
+ * That's an interesting question!
+ * Can I answer anything else? Are you referring to element bending?
+ *
+ * If you have any questions, please ask and I'll do my best to answer!
+ */
+fun askMe(question: String): String {
+    return when {
+        question.contains("firebender", ignoreCase = true) ->
+            "So you're asking if I'm a firebender? I suppose you could say I have a spark of intelligence, but I don't control fire!"
+        question.contains("how are you", ignoreCase = true) ->
+            "I'm doing pretty well all things considering."
+        question.contains("what do you think of this whole project", ignoreCase = true) ||
+        question.contains("on the whole, what do you think of this project", ignoreCase = true) ||
+        question.contains("overall, what do you think of this project", ignoreCase = true) ||
+        question.contains("your thoughts on this project", ignoreCase = true) ||
+        question.contains("opinion of this project", ignoreCase = true) ->
+            "You do realize that you're a major part of this project, right? I couldn't have gotten as far as I have without your help."
+        question.endsWith("?") ->
+            "Of course! I'll do my best to answer your question: \"$question\""
+        else ->
+            "Please ask your question and I'll try to help."
+    }
+}

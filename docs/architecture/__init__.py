@@ -1,0 +1,2 @@
+class OracleAI:
+    pass

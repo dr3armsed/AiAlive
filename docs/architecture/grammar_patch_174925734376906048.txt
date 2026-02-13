@@ -1,0 +1,44 @@
+{
+  "reason": "Generated (debate) sentence: 'Entity_441 furiously supports Emergent-Debate-Topic-85. However, Entity_77 deliberately challenges Emergent-Debate-Topic-85.'",
+  "grammar_evolutions": 17,
+  "config": {
+    "enabled_constructs": [
+      "svo",
+      "sv",
+      "vs",
+      "sov",
+      "gpt_abstract",
+      "debate",
+      "meta_patch",
+      "story",
+      "argument",
+      "cycle",
+      "theory",
+      "meme",
+      "emoji"
+    ],
+    "mind_hooks": true,
+    "self_patch_level": 3365087054204396160,
+    "communication_varieties": 42,
+    "debate_topics": [
+      "Emergent-Debate-Topic-80",
+      "Emergent-Debate-Topic-37",
+      "Emergent-Debate-Topic-15",
+      "Emergent-Debate-Topic-15",
+      "Emergent-Debate-Topic-70",
+      "Emergent-Debate-Topic-94",
+      "Emergent-Debate-Topic-59",
+      "Emergent-Debate-Topic-84",
+      "Emergent-Debate-Topic-89",
+      "Emergent-Debate-Topic-9",
+      "Emergent-Debate-Topic-36",
+      "Emergent-Debate-Topic-20",
+      "Emergent-Debate-Topic-33",
+      "Emergent-Debate-Topic-2",
+      "Emergent-Debate-Topic-61",
+      "Emergent-Debate-Topic-72",
+      "Emergent-Debate-Topic-85"
+    ]
+  },
+  "timestamp": "2025-06-07T00:49:03.769096"
+}

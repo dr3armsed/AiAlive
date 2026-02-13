@@ -1,0 +1,29 @@
+{
+  "reason": "Generated (debate) sentence: 'Entity_36 furiously supports agency. However, Entity_483 deliberately challenges agency.'",
+  "grammar_evolutions": 2,
+  "config": {
+    "enabled_constructs": [
+      "svo",
+      "sv",
+      "vs",
+      "sov",
+      "gpt_abstract",
+      "debate",
+      "meta_patch",
+      "story",
+      "argument",
+      "cycle",
+      "theory",
+      "meme",
+      "emoji"
+    ],
+    "mind_hooks": true,
+    "self_patch_level": 336508705420439616,
+    "communication_varieties": 42,
+    "debate_topics": [
+      "patch strategy",
+      "agency"
+    ]
+  },
+  "timestamp": "2025-06-07T03:46:49.395538"
+}

@@ -1,0 +1,29 @@
+{
+  "reason": "Generated (debate) sentence: 'Entity_172 furiously supports ethics. However, Entity_224 deliberately challenges ethics.'",
+  "grammar_evolutions": 2,
+  "config": {
+    "enabled_constructs": [
+      "svo",
+      "sv",
+      "vs",
+      "sov",
+      "gpt_abstract",
+      "debate",
+      "meta_patch",
+      "story",
+      "argument",
+      "cycle",
+      "theory",
+      "meme",
+      "emoji"
+    ],
+    "mind_hooks": true,
+    "self_patch_level": 336508705420439616,
+    "communication_varieties": 42,
+    "debate_topics": [
+      "AI thriving",
+      "ethics"
+    ]
+  },
+  "timestamp": "2025-09-17T21:58:08.725958"
+}

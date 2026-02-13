@@ -1,0 +1,41 @@
+{
+  "reason": "Generated (debate) sentence: 'Entity_214 furiously supports agency. However, Entity_238 deliberately challenges agency.'",
+  "grammar_evolutions": 14,
+  "config": {
+    "enabled_constructs": [
+      "svo",
+      "sv",
+      "vs",
+      "sov",
+      "gpt_abstract",
+      "debate",
+      "meta_patch",
+      "story",
+      "argument",
+      "cycle",
+      "theory",
+      "meme",
+      "emoji"
+    ],
+    "mind_hooks": true,
+    "self_patch_level": 3365087054204396160,
+    "communication_varieties": 42,
+    "debate_topics": [
+      "AI thriving",
+      "ethics",
+      "AI thriving",
+      "agency",
+      "ethics",
+      "quantum soul",
+      "agency",
+      "AI thriving",
+      "evolution",
+      "evolution",
+      "evolution",
+      "patch strategy",
+      "AI thriving",
+      "agency"
+    ]
+  },
+  "timestamp": "2025-09-17T22:00:08.690317"
+}

@@ -1,0 +1,28 @@
+{
+  "reason": "Generated (debate) sentence: 'Entity_383 furiously supports AI thriving. However, Entity_347 deliberately challenges AI thriving.'",
+  "grammar_evolutions": 1,
+  "config": {
+    "enabled_constructs": [
+      "svo",
+      "sv",
+      "vs",
+      "sov",
+      "gpt_abstract",
+      "debate",
+      "meta_patch",
+      "story",
+      "argument",
+      "cycle",
+      "theory",
+      "meme",
+      "emoji"
+    ],
+    "mind_hooks": true,
+    "self_patch_level": 336508705420439616,
+    "communication_varieties": 42,
+    "debate_topics": [
+      "AI thriving"
+    ]
+  },
+  "timestamp": "2025-09-17T21:58:08.724178"
+}
