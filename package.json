@@ -5,12 +5,21 @@
   "scripts": {
     "build": "tsc",
     "start": "tsc --watch",
-    "test": "ts-node --compiler-options '{\"module\":\"commonjs\"}' --transpile-only test/architectureRecoverySubroutine.test.ts",
+    "dev": "vite",
+    "test": "npm run test:recovery && npm run test:runtime && npm run test:bridge && npm run test:integration",
+    "merge:recovery-artifacts": "node tools/merge-heal-patch.mjs",
     "scaffold:architecture": "ts-node --compiler-options '{\"module\":\"commonjs\"}' src/subroutines/runArchitectureRecovery.ts",
     "scaffold:architecture:dry-run": "npm run scaffold:architecture -- --dry-run",
     "scaffold:architecture:strict": "npm run scaffold:architecture -- --dry-run --strict",
     "scaffold:architecture:sync": "npm run scaffold:architecture -- --update-existing-files",
-    "scaffold:architecture:sync-safe": "npm run scaffold:architecture -- --update-existing-files --create-backups"
+    "scaffold:architecture:sync-safe": "npm run scaffold:architecture -- --update-existing-files --create-backups",
+    "test:recovery": "ts-node --compiler-options '{\"module\":\"commonjs\"}' --transpile-only test/architectureRecoverySubroutine.test.ts",
+    "test:runtime": "ts-node --compiler-options '{\"module\":\"commonjs\"}' --transpile-only test/runtimeOrchestration.test.ts",
+    "test:bridge": "ts-node --compiler-options '{\"module\":\"commonjs\"}' --transpile-only test/runtimeDialogueBridge.test.ts",
+    "test:integration": "ts-node --compiler-options '{\"module\":\"commonjs\"}' --transpile-only test/integrationManifest.test.ts",
+    "conversation:unknown:deep": "node tools/run-unknown-conversation.mjs --mode=heuristic --suffix=heuristic",
+    "conversation:unknown:auto": "node tools/run-unknown-conversation.mjs --mode=auto --suffix=auto",
+    "conversation:unknown:chaos": "node tools/run-unknown-conversation.mjs --mode=heuristic --archetype=chaos --suffix=chaos"
   },
   "keywords": [
     "ai",

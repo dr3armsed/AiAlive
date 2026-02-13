@@ -29,7 +29,7 @@ export const defaultArchitectureBlueprint: ArchitectureBlueprint = {
     'src/entry',
     'src/subroutines',
     'data',
-    'archive',
+    'artifacts/archive',
   ],
   files: [],
 };
