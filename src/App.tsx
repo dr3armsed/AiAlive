@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { countByCategory, countByIntegration, listUnintegratedAssets, markedAssets } from './integrations/markedAssets';
+import { countByCategory, markedAssets } from './integrations/markedAssets';
 import { GenesisPanel } from './runtime/components/GenesisPanel';
 import { PrivateWorldsPanel } from './runtime/components/PrivateWorldsPanel';
 import { CreationsPanel } from './runtime/components/CreationsPanel';
@@ -23,6 +24,13 @@ export function App() {
   const categoryCounts = countByCategory();
   const integrationCounts = countByIntegration();
   const unintegrated = listUnintegratedAssets();
+import { useMetacosmRuntime } from './runtime/hooks/useMetacosmRuntime';
+
+type Tab = 'genesis' | 'conversation' | 'private-worlds' | 'creations' | 'integration';
+
+export function App() {
+  const [activeTab, setActiveTab] = useState<Tab>('genesis');
+  const categoryCounts = countByCategory();
   const runtime = useMetacosmRuntime();
 
   return (
@@ -35,6 +43,11 @@ export function App() {
 
       <nav style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem', flexWrap: 'wrap' }}>
         <button onClick={() => setActiveTab('architect-twin')}>Architect Twin</button>
+        Active vertical slice now supports Genesis → Conversation → Private Worlds → Creations, while still tracking
+        legacy integration coverage.
+      </p>
+
+      <nav style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem' }}>
         <button onClick={() => setActiveTab('genesis')}>Genesis</button>
         <button onClick={() => setActiveTab('conversation')}>Conversation</button>
         <button onClick={() => setActiveTab('private-worlds')}>Private Worlds</button>
@@ -53,6 +66,9 @@ export function App() {
           }}
         />
       )}
+        <button onClick={() => setActiveTab('integration')}>Integration Manifest</button>
+      </nav>
+
       {activeTab === 'genesis' && <GenesisPanel onCreate={runtime.createFromGenesis} />}
       {activeTab === 'conversation' && (
         <ConversationPanel
@@ -88,6 +104,11 @@ export function App() {
             ))}
           </ul>
           <h3>Integration Manifest</h3>
+            <li>Legacy UI assets tracked: {categoryCounts['legacy-ui']}</li>
+            <li>Python subsystem assets tracked: {categoryCounts['python-subsystems']}</li>
+            <li>State/artifact assets tracked: {categoryCounts['state-artifacts']}</li>
+          </ul>
+          <h3>Integrated Asset Manifest</h3>
           <ul>
             {markedAssets.map((asset) => (
               <li key={asset.path}>
