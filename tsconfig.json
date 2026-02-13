@@ -17,6 +17,7 @@
     "src/App.tsx",
     "src/entry/index.tsx",
     "src/config/**/*.ts",
-    "src/subroutines/**/*.ts"
+    "src/subroutines/**/*.ts",
+    "src/integrations/**/*.ts"
   ]
 }
