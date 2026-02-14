@@ -9,7 +9,7 @@ import { SystemsPanel } from './runtime/components/SystemsPanel';
 import { LegacyReactivationPanel } from './runtime/components/LegacyReactivationPanel';
 import { useMetacosmRuntime } from './runtime/hooks/useMetacosmRuntime';
 
-type Tab = 'genesis' | 'architect-twin' | 'conversation' | 'private-worlds' | 'creations' | 'systems' | 'legacy-reactivation' | 'integration';
+type Tab = 'genesis' | 'architect-twin' | 'conversation' | 'private-worlds' | 'creations' | 'systems' | 'integration';
 
 export function App() {
   const [activeTab, setActiveTab] = useState<Tab>('architect-twin');
@@ -85,24 +85,6 @@ export function App() {
               </li>
             ))}
           </ul>
-
-
-          <h3>Legacy UI Reactivation Queue</h3>
-          <ul>
-            {markedAssets
-              .filter((asset) => asset.category === 'legacy-ui')
-              .map((asset) => (
-                <li key={`legacy_${asset.path}`}>
-                  <code>{asset.path}</code> — next step: extract runtime-safe adapter + route-level harness.
-                </li>
-              ))}
-          </ul>
-
-          <h3>Python + Artifact Upgrade Status</h3>
-          <p>
-            Runtime bridge now consumes integrated Python services (dialogue/entity/persistence/oracle/theory formation)
-            and stitches artifact context from recovery bundles into dialogue hints.
-          </p>
 
           <h3>Integration Manifest</h3>
           <ul>

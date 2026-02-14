@@ -89,21 +89,7 @@ def build_artifact_hint(state: Dict[str, Dict[str, Any]]) -> str:
     heal_count = int(artifacts.get("heal_count", 0) or 0)
     patch_count = int(artifacts.get("patch_count", 0) or 0)
     has_unified = bool(artifacts.get("has_unified_patch", False))
-
-    retrieval = artifacts.get("retrieval", {}) or {}
-    retrieval_path = retrieval.get("path") or "none"
-    retrieval_label = os.path.basename(str(retrieval_path)) if retrieval_path != "none" else "none"
-    retrieval_excerpt = str(retrieval.get("excerpt") or "")
-    if retrieval_excerpt:
-        return (
-            f"heals={heal_count},patches={patch_count},unified={str(has_unified).lower()},"
-            f"retrieval={retrieval_label},excerpt={retrieval_excerpt}"
-        )
-
-    return (
-        f"heals={heal_count},patches={patch_count},unified={str(has_unified).lower()},"
-        f"retrieval={retrieval_label}"
-    )
+    return f"heals={heal_count},patches={patch_count},unified={str(has_unified).lower()}"
 
 
 def main() -> None:

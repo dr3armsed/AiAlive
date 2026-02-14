@@ -1,7 +1,7 @@
 import glob
 import json
 import os
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict
 
 
 DEFAULT_STATE = {
@@ -23,44 +23,15 @@ def _load_json(path: str, default: Dict[str, Any]) -> Dict[str, Any]:
         return default
 
 
-def _read_artifact_excerpt(path: str, max_chars: int = 160) -> str:
-    try:
-        with open(path, "r", encoding="utf-8") as file:
-            raw = file.read(max_chars * 2)
-    except Exception:
-        return ""
-
-    compact = " ".join(raw.split())
-    if len(compact) <= max_chars:
-        return compact
-    return f"{compact[: max_chars - 3]}..."
-
-
-def _latest_artifact(paths: List[str]) -> Optional[str]:
-    if not paths:
-        return None
-    return max(paths, key=lambda item: os.path.getmtime(item))
-
-
 def load_artifact_context() -> Dict[str, Any]:
     """Return lightweight artifact metadata for runtime context stitching."""
     heals = glob.glob("artifacts/heals/*.txt")
     patches = glob.glob("artifacts/patches/*.txt")
     unified_patch = "artifacts/patches/unified_recovery_patch.txt"
-
-    candidates = heals + patches
-    latest = _latest_artifact(candidates)
-
-    retrieval = {
-        "path": latest,
-        "excerpt": _read_artifact_excerpt(latest) if latest else "",
-    }
-
     return {
         "heal_count": len(heals),
         "patch_count": len(patches),
         "has_unified_patch": os.path.exists(unified_patch),
-        "retrieval": retrieval,
     }
 
 
