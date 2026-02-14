@@ -6,6 +6,7 @@ import { CreationsPanel } from './runtime/components/CreationsPanel';
 import { GenesisPanel } from './runtime/components/GenesisPanel';
 import { PrivateWorldsPanel } from './runtime/components/PrivateWorldsPanel';
 import { SystemsPanel } from './runtime/components/SystemsPanel';
+import { LegacyReactivationPanel } from './runtime/components/LegacyReactivationPanel';
 import { useMetacosmRuntime } from './runtime/hooks/useMetacosmRuntime';
 
 type Tab = 'genesis' | 'architect-twin' | 'conversation' | 'private-worlds' | 'creations' | 'systems' | 'integration';
@@ -33,6 +34,7 @@ export function App() {
         <button onClick={() => setActiveTab('private-worlds')}>Private Worlds</button>
         <button onClick={() => setActiveTab('creations')}>Creations</button>
         <button onClick={() => setActiveTab('systems')}>Systems</button>
+        <button onClick={() => setActiveTab('legacy-reactivation')}>Legacy Reactivation</button>
         <button onClick={() => setActiveTab('integration')}>Integration Manifest</button>
       </nav>
 
@@ -62,6 +64,7 @@ export function App() {
         <CreationsPanel creations={runtime.creations} egregores={runtime.egregores} onForge={runtime.forgeCreation} />
       )}
       {activeTab === 'systems' && <SystemsPanel systems={runtime.systems} telemetry={runtime.telemetry} />}
+      {activeTab === 'legacy-reactivation' && <LegacyReactivationPanel />}
 
       {activeTab === 'integration' && (
         <section>
