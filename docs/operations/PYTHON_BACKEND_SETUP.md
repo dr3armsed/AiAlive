@@ -60,11 +60,11 @@ npm run test:recovery
 
 ## Notes on current bridge composition
 
-`runtime_bridge.py` delegates to `scripts/python/runtime/bridge.py`, which composes behavior from:
+`runtime_bridge.py` currently composes behavior from:
 
-- `scripts/python/runtime/entity_management.py` (normalization)
-- `scripts/python/runtime/persistence.py` (state loading + artifact retrieval context)
-- `scripts/python/runtime/dialogue.py` (response composition)
+- `scripts/python/entity_management.py` (normalization)
+- `scripts/python/persistence.py` (state loading)
+- `scripts/python/dialogue.py` (response composition)
 - `scripts/python/oracle.py` (DecisionMatrix hinting when importable)
 
 If `RUNTIME_USE_OLLAMA=1` is set, the bridge source reports `python-bridge:ollama`; otherwise `python-bridge:heuristic`.

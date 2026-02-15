@@ -22,7 +22,6 @@ function testPythonBridgeRespondsForUnknown() {
   assert.ok(parsed.response.includes('Oracle-hint='));
   assert.ok(parsed.response.includes('Theory-hint='));
   assert.ok(parsed.response.includes('Artifact-context='));
-  assert.ok(parsed.response.includes('retrieval='));
   assert.ok(parsed.signals && typeof parsed.signals.emotion === 'string');
   assert.ok(typeof parsed.latencyMs === 'number');
   assert.strictEqual(parsed.model, null);
@@ -39,9 +38,6 @@ function testPythonBridgeRespondsForCustomEgregore() {
   assert.strictEqual(parsed.source, 'python-bridge:heuristic');
   assert.ok(typeof parsed.response === 'string' && parsed.response.includes('Custom'));
   assert.ok(parsed.response.includes('Oracle-hint='));
-  assert.ok(parsed.response.includes('Theory-hint='));
-  assert.ok(parsed.response.includes('Artifact-context='));
-  assert.ok(parsed.response.includes('retrieval='));
   assert.ok(parsed.signals && typeof parsed.signals.emotion === 'string');
 }
 

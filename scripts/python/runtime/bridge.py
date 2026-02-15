@@ -104,6 +104,7 @@ def build_artifact_hint(state: Dict[str, Dict[str, Any]]) -> str:
         f"heals={heal_count},patches={patch_count},unified={str(has_unified).lower()},"
         f"retrieval={retrieval_label}"
     )
+    return f"heals={heal_count},patches={patch_count},unified={str(has_unified).lower()}"
 
 
 def main() -> None:

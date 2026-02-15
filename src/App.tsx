@@ -10,6 +10,7 @@ import { LegacyReactivationPanel } from './runtime/components/LegacyReactivation
 import { useMetacosmRuntime } from './runtime/hooks/useMetacosmRuntime';
 
 type Tab = 'genesis' | 'architect-twin' | 'conversation' | 'private-worlds' | 'creations' | 'systems' | 'legacy-reactivation' | 'integration';
+type Tab = 'genesis' | 'architect-twin' | 'conversation' | 'private-worlds' | 'creations' | 'systems' | 'integration';
 
 export function App() {
   const [activeTab, setActiveTab] = useState<Tab>('architect-twin');
