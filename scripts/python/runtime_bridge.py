@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from runtime.bridge import main
 import json
 import os
 import sys
