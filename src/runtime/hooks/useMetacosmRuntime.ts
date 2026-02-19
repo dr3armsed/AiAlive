@@ -1,6 +1,8 @@
 import { useMemo, useState } from 'react';
 import {
   DialogueSource,
+  ExperienceMode,
+  RuntimeInteractionPreferences,
   RuntimeCreativeWork,
   RuntimeDialogueSignals,
   RuntimeEgregore,
@@ -107,7 +109,8 @@ export function useMetacosmRuntime() {
       [egregoreId]: [...(prev[egregoreId] || []), userMessage],
     }));
 
-    const result = await generateDialogueTurn({ prompt: content, egregore });
+    const steeringPrefix = `[style=${preferences.styleMode};source=${preferences.sourceMode};memoryDepth=${preferences.memoryDepth}]`;
+    const result = await generateDialogueTurn({ prompt: `${steeringPrefix} ${content}`, egregore });
     setLastDialogueSource(result.source);
     setLastSignals(result.signals);
     setLastLatencyMs(result.latencyMs);
@@ -164,6 +167,9 @@ export function useMetacosmRuntime() {
       errorCount,
       lastModel,
       lastError,
+      activeStyleMode: preferences.styleMode,
+      activeSourceMode: preferences.sourceMode,
+      experienceMode,
     };
   }, [conversations, errorCount, lastDialogueSource, lastError, lastLatencyMs, lastModel, lastSignals]);
 
@@ -179,5 +185,9 @@ export function useMetacosmRuntime() {
     birthArchitectTwin,
     sendMessage,
     forgeCreation,
+    experienceMode,
+    setExperienceMode,
+    preferences,
+    setPreferences,
   };
 }

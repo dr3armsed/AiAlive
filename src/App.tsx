@@ -27,6 +27,20 @@ export function App() {
         Active slice now includes Architect Twin deep-conversation protocol and a systems orchestration layer,
         alongside Genesis, Conversation, Private Worlds, and Creations.
       </p>
+      <div style={{ display: 'flex', gap: '0.5rem', margin: '0.75rem 0 1rem' }}>
+        <button
+          style={{ fontWeight: runtime.experienceMode === 'guided' ? 700 : 400 }}
+          onClick={() => runtime.setExperienceMode('guided')}
+        >
+          Guided Experience
+        </button>
+        <button
+          style={{ fontWeight: runtime.experienceMode === 'console' ? 700 : 400 }}
+          onClick={() => runtime.setExperienceMode('console')}
+        >
+          Full Console
+        </button>
+      </div>
 
       <nav style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem', flexWrap: 'wrap' }}>
         <button onClick={() => setActiveTab('architect-twin')}>Architect Twin</button>
@@ -56,6 +70,9 @@ export function App() {
           egregores={runtime.egregores}
           conversations={runtime.conversations}
           onSend={runtime.sendMessage}
+          lastDialogueSource={runtime.telemetry.lastDialogueSource}
+          preferences={runtime.preferences}
+          onPreferencesChange={runtime.setPreferences}
         />
       )}
       {activeTab === 'private-worlds' && (

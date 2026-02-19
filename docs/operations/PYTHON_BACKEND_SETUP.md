@@ -60,6 +60,11 @@ npm run test:recovery
 
 ## Notes on current bridge composition
 
+`runtime_bridge.py` delegates to `scripts/python/runtime/bridge.py`, which composes behavior from:
+
+- `scripts/python/runtime/entity_management.py` (normalization)
+- `scripts/python/runtime/persistence.py` (state loading + artifact retrieval context)
+- `scripts/python/runtime/dialogue.py` (response composition)
 `runtime_bridge.py` currently composes behavior from:
 
 - `scripts/python/entity_management.py` (normalization)
