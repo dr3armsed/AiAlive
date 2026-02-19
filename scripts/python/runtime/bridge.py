@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
 import json
 import os
-import re
 import sys
 import time
-from typing import Any, Dict, Optional, Tuple
+from typing import Any, Dict, Optional
 
 from runtime.dialogue import compose_dialogue_response
 from runtime.entity_management import normalize_egregore
@@ -14,9 +13,6 @@ try:
     from oracle import DecisionMatrix
 except Exception:
     DecisionMatrix = None
-
-
-STEERING_PATTERN = re.compile(r"^\[style=([^;\]]+);source=([^;\]]+);memoryDepth=(\d+)\]\s*(.*)$", re.IGNORECASE | re.DOTALL)
 
 
 def derive_emotion(prompt: str) -> str:
@@ -71,37 +67,6 @@ def parse_payload(raw: str) -> Dict[str, Any]:
     return {}
 
 
-def parse_steering(prompt: str) -> Tuple[str, str, int, str]:
-    match = STEERING_PATTERN.match(prompt.strip())
-    if not match:
-        return ("adaptive", "auto", 3, prompt)
-
-    style_mode = match.group(1).strip().lower()
-    source_mode = match.group(2).strip().lower()
-    try:
-        memory_depth = int(match.group(3))
-    except ValueError:
-        memory_depth = 3
-
-    remainder = match.group(4).strip()
-
-    if style_mode not in {"adaptive", "poetic", "tactical"}:
-        style_mode = "adaptive"
-    if source_mode not in {"auto", "external-first", "local-first"}:
-        source_mode = "auto"
-
-    memory_depth = max(1, min(10, memory_depth))
-    return (style_mode, source_mode, memory_depth, remainder)
-
-
-def resolve_source(source_mode: str) -> str:
-    if source_mode == "local-first":
-        return "python-bridge:ollama"
-    if source_mode == "external-first":
-        return "python-bridge:heuristic"
-    return "python-bridge:heuristic" if os.getenv("RUNTIME_USE_OLLAMA", "0") != "1" else "python-bridge:ollama"
-
-
 def error_result(reason: str, started: float) -> Dict[str, Any]:
     elapsed_ms = int((time.perf_counter() - started) * 1000)
     return {
@@ -139,6 +104,7 @@ def build_artifact_hint(state: Dict[str, Dict[str, Any]]) -> str:
         f"heals={heal_count},patches={patch_count},unified={str(has_unified).lower()},"
         f"retrieval={retrieval_label}"
     )
+    return f"heals={heal_count},patches={patch_count},unified={str(has_unified).lower()}"
 
 
 def main() -> None:
@@ -151,8 +117,7 @@ def main() -> None:
         sys.stdout.write(json.dumps(error_result("invalid_json", started)))
         return
 
-    raw_prompt = str(payload.get("prompt", "")).strip()
-    style_mode, source_mode, memory_depth, prompt = parse_steering(raw_prompt)
+    prompt = str(payload.get("prompt", "")).strip()
     normalized = normalize_egregore(payload)
     name = normalized["name"]
     egregore_id = normalized["id"]
@@ -178,12 +143,10 @@ def main() -> None:
         oracle_hint=oracle_hint,
         theory_hint=theory_hint,
         artifact_hint=artifact_hint,
-        style_mode=style_mode,
-        memory_depth=memory_depth,
     )
 
     elapsed_ms = int((time.perf_counter() - started) * 1000)
-    source = resolve_source(source_mode)
+    source = "python-bridge:heuristic" if os.getenv("RUNTIME_USE_OLLAMA", "0") != "1" else "python-bridge:ollama"
 
     result: Dict[str, Any] = {
         "source": source,

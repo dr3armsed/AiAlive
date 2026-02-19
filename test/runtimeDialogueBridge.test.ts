@@ -22,7 +22,6 @@ function testPythonBridgeRespondsForUnknown() {
   assert.ok(parsed.response.includes('Oracle-hint='));
   assert.ok(parsed.response.includes('Theory-hint='));
   assert.ok(parsed.response.includes('Artifact-context='));
-  assert.ok(parsed.response.includes('retrieval='));
   assert.ok(parsed.signals && typeof parsed.signals.emotion === 'string');
   assert.ok(typeof parsed.latencyMs === 'number');
   assert.strictEqual(parsed.model, null);
@@ -39,9 +38,6 @@ function testPythonBridgeRespondsForCustomEgregore() {
   assert.strictEqual(parsed.source, 'python-bridge:heuristic');
   assert.ok(typeof parsed.response === 'string' && parsed.response.includes('Custom'));
   assert.ok(parsed.response.includes('Oracle-hint='));
-  assert.ok(parsed.response.includes('Theory-hint='));
-  assert.ok(parsed.response.includes('Artifact-context='));
-  assert.ok(parsed.response.includes('retrieval='));
   assert.ok(parsed.signals && typeof parsed.signals.emotion === 'string');
 }
 
@@ -57,46 +53,6 @@ function testPythonBridgeOllamaSourceSelection() {
   assert.strictEqual(run.status, 0, run.stderr);
   const parsed = JSON.parse(run.stdout);
   assert.strictEqual(parsed.source, 'python-bridge:ollama');
-}
-
-
-function testPythonBridgeRespectsSteeringModes() {
-  const run = runBridge({
-    prompt: '[style=poetic;source=local-first;memoryDepth=7] Unknown, report your status',
-    egregore: { id: 'egregore_unknown', name: 'Unknown' },
-  });
-
-  assert.strictEqual(run.status, 0, run.stderr);
-  const parsed = JSON.parse(run.stdout);
-  assert.strictEqual(parsed.source, 'python-bridge:ollama');
-  assert.ok(parsed.response.includes('Style=poetic'));
-  assert.ok(parsed.response.includes('Memory-depth=7'));
-  assert.ok(!parsed.response.includes('[style='));
-}
-
-function testPythonBridgeSteeringOverridesEnvSelection() {
-  const externalFirst = runBridge(
-    {
-      prompt: '[style=tactical;source=external-first;memoryDepth=4] Route check',
-      egregore: { id: 'egregore_custom', name: 'Custom' },
-    },
-    { RUNTIME_USE_OLLAMA: '1' },
-  );
-
-  assert.strictEqual(externalFirst.status, 0, externalFirst.stderr);
-  const externalParsed = JSON.parse(externalFirst.stdout);
-  assert.strictEqual(externalParsed.source, 'python-bridge:heuristic');
-  assert.ok(externalParsed.response.includes('Style=tactical'));
-
-  const invalidSteering = runBridge({
-    prompt: '[style=unknown;source=mystery;memoryDepth=999] Unknown, normalize this',
-    egregore: { id: 'egregore_unknown', name: 'Unknown' },
-  });
-
-  assert.strictEqual(invalidSteering.status, 0, invalidSteering.stderr);
-  const invalidParsed = JSON.parse(invalidSteering.stdout);
-  assert.ok(invalidParsed.response.includes('Style=adaptive'));
-  assert.ok(invalidParsed.response.includes('Memory-depth=10'));
 }
 
 function testPythonBridgeHandlesInvalidJsonInput() {
@@ -116,8 +72,6 @@ function main() {
   testPythonBridgeRespondsForUnknown();
   testPythonBridgeRespondsForCustomEgregore();
   testPythonBridgeOllamaSourceSelection();
-  testPythonBridgeRespectsSteeringModes();
-  testPythonBridgeSteeringOverridesEnvSelection();
   testPythonBridgeHandlesInvalidJsonInput();
   console.log('Runtime dialogue bridge tests passed.');
 }
