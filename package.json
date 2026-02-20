@@ -17,8 +17,14 @@
     "test:runtime": "ts-node --compiler-options '{\"module\":\"commonjs\"}' --transpile-only test/runtimeOrchestration.test.ts",
     "test:bridge": "ts-node --compiler-options '{\"module\":\"commonjs\"}' --transpile-only test/runtimeDialogueBridge.test.ts",
     "test:integration": "ts-node --compiler-options '{\"module\":\"commonjs\"}' --transpile-only test/integrationManifest.test.ts",
-    "conversation:unknown:deep": "node tools/run-unknown-conversation.mjs"
-    "test:bridge": "ts-node --compiler-options '{\"module\":\"commonjs\"}' --transpile-only test/runtimeDialogueBridge.test.ts"
+    "conversation:unknown:deep": "node tools/run-unknown-conversation.mjs",
+    "test:legacy-adapter": "ts-node --compiler-options '{\"module\":\"commonjs\"}' --transpile-only test/runtimeLegacyAdapter.test.ts",
+    "portable:init": "node tools/portable/init.mjs",
+    "portable:doctor": "node tools/portable/doctor.mjs",
+    "portable:dev": "node tools/portable/run-dev.mjs",
+    "portable:checks": "node tools/portable/run-checks.mjs",
+    "test:portable": "ts-node --compiler-options '{\"module\":\"commonjs\"}' --transpile-only test/portableWorkflow.test.ts",
+    "test:substrate": "ts-node --compiler-options '{\"module\":\"commonjs\"}' --transpile-only test/runtimeWorldSubstrate.test.ts"
   },
   "keywords": [
     "ai",
