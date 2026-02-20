@@ -80,7 +80,4 @@ export interface RuntimeTelemetry {
   errorCount: number;
   lastModel: string | null;
   lastError: string | null;
-  activeStyleMode: DialogueStyleMode;
-  activeSourceMode: DialogueSourceMode;
-  experienceMode: ExperienceMode;
 }

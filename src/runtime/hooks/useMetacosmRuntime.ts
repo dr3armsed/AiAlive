@@ -39,12 +39,6 @@ export function useMetacosmRuntime() {
   const [errorCount, setErrorCount] = useState(0);
   const [lastModel, setLastModel] = useState<string | null>(null);
   const [lastError, setLastError] = useState<string | null>(null);
-  const [experienceMode, setExperienceMode] = useState<ExperienceMode>('guided');
-  const [preferences, setPreferences] = useState<RuntimeInteractionPreferences>({
-    styleMode: 'adaptive',
-    sourceMode: 'auto',
-    memoryDepth: 3,
-  });
 
   const systems: RuntimeSystem[] = useMemo(() => buildLegendarySystems(), []);
 
@@ -177,7 +171,7 @@ export function useMetacosmRuntime() {
       activeSourceMode: preferences.sourceMode,
       experienceMode,
     };
-  }, [conversations, errorCount, experienceMode, lastDialogueSource, lastError, lastLatencyMs, lastModel, lastSignals, preferences.memoryDepth, preferences.sourceMode, preferences.styleMode]);
+  }, [conversations, errorCount, lastDialogueSource, lastError, lastLatencyMs, lastModel, lastSignals]);
 
   return {
     egregores,

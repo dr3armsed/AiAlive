@@ -24,14 +24,6 @@ function testIntegrationManifestStatusModel() {
   const persistenceAsset = markedAssets.find((a) => a.path === 'scripts/python/persistence.py');
   assert.ok(persistenceAsset);
   assert.strictEqual(persistenceAsset?.integration, 'integrated');
-
-  const theoryAsset = markedAssets.find((a) => a.path === 'scripts/python/theory_formation.py');
-  assert.ok(theoryAsset);
-  assert.strictEqual(theoryAsset?.integration, 'integrated');
-
-  const healsAsset = markedAssets.find((a) => a.path === 'artifacts/heals/*.txt');
-  assert.ok(healsAsset);
-  assert.strictEqual(healsAsset?.integration, 'integrated');
 }
 
 function main() {

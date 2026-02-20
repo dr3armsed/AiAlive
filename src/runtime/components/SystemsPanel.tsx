@@ -30,17 +30,6 @@ export function SystemsPanel({ systems, telemetry }: Props) {
         Runtime diagnostics — latency: <strong>{telemetry.lastLatencyMs ?? 'n/a'}ms</strong>, model:{' '}
         <strong>{telemetry.lastModel ?? 'n/a'}</strong>, errors: <strong>{telemetry.errorCount}</strong>
       </p>
-      <p>
-        Experience mode: <strong>{telemetry.experienceMode}</strong>, style mode: <strong>{telemetry.activeStyleMode}</strong>,
-        source preference: <strong>{telemetry.activeSourceMode}</strong>
-      </p>
-
-      {telemetry.lastDialogueSource === 'python-bridge:ollama' && (
-        <p style={{ background: '#111827', padding: '0.5rem', borderRadius: 6 }}>
-          Bridge is currently reporting <strong>Ollama</strong> as the active source. For richer stylistic variance,
-          run the bridge with your external model profile enabled and compare telemetry deltas.
-        </p>
-      )}
 
       {telemetry.lastError && (
         <p>
