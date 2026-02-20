@@ -1,3 +1,5 @@
+import fs from 'node:fs';
+import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { ensurePortableDirs, PORTABLE_PATHS } from './portable-config.mjs';
 
@@ -12,6 +14,17 @@ const env = {
   NPM_CONFIG_CACHE: PORTABLE_PATHS.npmCache,
   PYTHONPYCACHEPREFIX: PORTABLE_PATHS.pythonCache,
 };
+
+function ensurePrerequisites() {
+  const nodeModulesPath = path.resolve(process.cwd(), 'node_modules');
+  if (!fs.existsSync(nodeModulesPath)) {
+    console.error('❌ Portable checks require dependencies to be installed first.');
+    console.error('Run `npm install` (or `npm ci`) and retry `npm run portable:checks`.');
+    process.exit(1);
+  }
+}
+
+ensurePrerequisites();
 
 const checks = ['build', 'test:bridge', 'test:portable'];
 
