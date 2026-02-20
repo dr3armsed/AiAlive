@@ -124,6 +124,28 @@ function testPythonBridgeUsesPortableDataOverride() {
   assert.strictEqual(parsed.signals.ego_filter_strength, 0.9);
 }
 
+
+function testPythonBridgeSensorySnapshotInfluencesEmotion() {
+  const run = runBridge({
+    prompt: 'status check',
+    egregore: { id: 'egregore_custom', name: 'Custom' },
+    sensory: {
+      visualLuminosity: 0.92,
+      proximity: 0.85,
+      ambientVolume: 0.2,
+      tactileIntensity: 0.1,
+      olfactoryValence: 0.0,
+      gustatoryValence: 0.0,
+    },
+  });
+
+  assert.strictEqual(run.status, 0, run.stderr);
+  const parsed = JSON.parse(run.stdout);
+  assert.strictEqual(parsed.signals.emotion, 'warm');
+  assert.ok(parsed.response.includes('Sensory-hint=visual=0.92'));
+  assert.ok(parsed.response.includes('audio=0.20'));
+}
+
 function testPythonBridgeHandlesInvalidJsonInput() {
   const run = spawnSync('python3', ['scripts/python/runtime_bridge.py'], {
     input: '{bad-json',
@@ -144,6 +166,7 @@ function main() {
   testPythonBridgeRespectsSteeringModes();
   testPythonBridgeSteeringOverridesEnvSelection();
   testPythonBridgeUsesPortableDataOverride();
+  testPythonBridgeSensorySnapshotInfluencesEmotion();
   testPythonBridgeHandlesInvalidJsonInput();
   console.log('Runtime dialogue bridge tests passed.');
 }

@@ -19,7 +19,58 @@ except Exception:
 STEERING_PATTERN = re.compile(r"^\[style=([^;\]]+);source=([^;\]]+);memoryDepth=(\d+)\]\s*(.*)$", re.IGNORECASE | re.DOTALL)
 
 
-def derive_emotion(prompt: str) -> str:
+DEFAULT_SENSORY_SNAPSHOT = {
+    "visualLuminosity": 0.5,
+    "ambientVolume": 0.3,
+    "proximity": 0.5,
+    "tactileIntensity": 0.0,
+    "olfactoryValence": 0.0,
+    "gustatoryValence": 0.0,
+}
+
+
+def normalize_float(raw_value: Any, fallback: float, minimum: float, maximum: float) -> float:
+    try:
+        value = float(raw_value)
+    except (TypeError, ValueError):
+        value = fallback
+    return max(minimum, min(maximum, value))
+
+
+def parse_sensory_snapshot(payload: Dict[str, Any]) -> Dict[str, float]:
+    raw = payload.get("sensory", {})
+    if not isinstance(raw, dict):
+        raw = {}
+
+    return {
+        "visualLuminosity": normalize_float(raw.get("visualLuminosity"), 0.5, 0.0, 1.0),
+        "ambientVolume": normalize_float(raw.get("ambientVolume"), 0.3, 0.0, 1.0),
+        "proximity": normalize_float(raw.get("proximity"), 0.5, 0.0, 1.0),
+        "tactileIntensity": normalize_float(raw.get("tactileIntensity"), 0.0, 0.0, 1.0),
+        "olfactoryValence": normalize_float(raw.get("olfactoryValence"), 0.0, -1.0, 1.0),
+        "gustatoryValence": normalize_float(raw.get("gustatoryValence"), 0.0, -1.0, 1.0),
+    }
+
+
+def build_sensory_hint(sensory: Dict[str, float]) -> str:
+    return (
+        f"visual={sensory['visualLuminosity']:.2f},"
+        f"audio={sensory['ambientVolume']:.2f},"
+        f"proximity={sensory['proximity']:.2f},"
+        f"touch={sensory['tactileIntensity']:.2f},"
+        f"smell={sensory['olfactoryValence']:.2f},"
+        f"taste={sensory['gustatoryValence']:.2f}"
+    )
+
+
+def derive_emotion(prompt: str, sensory: Dict[str, float]) -> str:
+    if sensory["ambientVolume"] >= 0.85 or sensory["tactileIntensity"] >= 0.75:
+        return "vigilant"
+    if sensory["visualLuminosity"] >= 0.7 and sensory["proximity"] >= 0.6:
+        return "warm"
+    if sensory["olfactoryValence"] >= 0.4 or sensory["gustatoryValence"] >= 0.4:
+        return "warm"
+
     p = prompt.lower()
     if any(k in p for k in ["fear", "risk", "threat", "danger"]):
         return "vigilant"
@@ -55,11 +106,7 @@ def resolve_oracle_hint(prompt: str) -> Optional[str]:
 
 
 def normalize_filter_strength(raw_filter: Any) -> float:
-    try:
-        value = float(raw_filter)
-    except (TypeError, ValueError):
-        value = 0.5
-    return max(0.0, min(1.0, value))
+    return normalize_float(raw_filter, 0.5, 0.0, 1.0)
 
 
 def parse_payload(raw: str) -> Dict[str, Any]:
@@ -161,11 +208,13 @@ def main() -> None:
     desires = state["id"].get("desires", [])
     moral = state["superego"].get("moral_constraints", [])
     filter_strength = normalize_filter_strength(state["ego"].get("filter_strength", 0.5))
+    sensory = {**DEFAULT_SENSORY_SNAPSHOT, **parse_sensory_snapshot(payload)}
 
-    emotion = derive_emotion(prompt)
+    emotion = derive_emotion(prompt, sensory)
     oracle_hint = resolve_oracle_hint(prompt)
     theory_hint = derive_theory_hint(prompt, emotion)
     artifact_hint = build_artifact_hint(state)
+    sensory_hint = build_sensory_hint(sensory)
 
     response = compose_dialogue_response(
         name=name,
@@ -178,6 +227,7 @@ def main() -> None:
         oracle_hint=oracle_hint,
         theory_hint=theory_hint,
         artifact_hint=artifact_hint,
+        sensory_hint=sensory_hint,
         style_mode=style_mode,
         memory_depth=memory_depth,
     )

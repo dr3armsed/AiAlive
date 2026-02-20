@@ -12,6 +12,7 @@ def compose_dialogue_response(
     oracle_hint: Optional[str] = None,
     theory_hint: Optional[str] = None,
     artifact_hint: Optional[str] = None,
+    sensory_hint: Optional[str] = None,
     style_mode: str = "adaptive",
     memory_depth: int = 3,
 ) -> str:
@@ -19,6 +20,7 @@ def compose_dialogue_response(
     oracle = f" Oracle-hint={oracle_hint}." if oracle_hint else ""
     theory = f" Theory-hint={theory_hint}." if theory_hint else ""
     artifacts = f" Artifact-context={artifact_hint}." if artifact_hint else ""
+    sensory = f" Sensory-hint={sensory_hint}." if sensory_hint else ""
     steering = f" Style={style_mode}. Memory-depth={memory_depth}."
 
     if style_mode == "poetic":
@@ -33,11 +35,11 @@ def compose_dialogue_response(
             f"Unknown: {preface} I remain uncontained. Prompt received -> '{prompt}'. "
             f"Signals: emotion={emotion}, id_desires={id_desires}, "
             f"moral_constraints={superego_rules}, ego_filter={ego_filter}."
-            f"{steering}{oracle}{theory}{artifacts}"
+            f"{steering}{oracle}{theory}{artifacts}{sensory}"
         )
 
     return (
         f"{name}: {preface} I hear '{prompt}'. Internal alignment -> emotion={emotion}, "
         f"id_desires={id_desires}, superego_rules={superego_rules}, ego_filter={ego_filter}."
-        f"{steering}{oracle}{theory}{artifacts}"
+        f"{steering}{oracle}{theory}{artifacts}{sensory}"
     )

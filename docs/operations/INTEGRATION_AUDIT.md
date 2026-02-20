@@ -33,6 +33,7 @@ These paths are defined in `tsconfig.json`.
   - `signals`
   - `latencyMs`
   - `model`
+- Bridge request payload supports optional `sensory` snapshot values (`visualLuminosity`, `ambientVolume`, `proximity`, `tactileIntensity`, `olfactoryValence`, `gustatoryValence`) for deterministic multimodal emotion shaping.
 
 ### Python modules on the active bridge path
 
