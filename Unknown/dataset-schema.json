@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "UnknownTrainingExample",
+  "type": "object",
+  "required": [
+    "exampleId",
+    "egregoreId",
+    "timestamp",
+    "input",
+    "output",
+    "metadata"
+  ],
+  "properties": {
+    "exampleId": { "type": "string" },
+    "egregoreId": { "type": "string" },
+    "timestamp": { "type": "string", "format": "date-time" },
+    "input": {
+      "type": "object",
+      "required": ["prompt", "preferences"],
+      "properties": {
+        "prompt": { "type": "string" },
+        "preferences": {
+          "type": "object",
+          "properties": {
+            "styleMode": { "type": "string" },
+            "sourceMode": { "type": "string" },
+            "memoryDepth": { "type": "number" }
+          }
+        },
+        "sensory": {
+          "type": "object",
+          "properties": {
+            "visualLuminosity": { "type": "number" },
+            "ambientVolume": { "type": "number" },
+            "proximity": { "type": "number" },
+            "tactileIntensity": { "type": "number" },
+            "olfactoryValence": { "type": "number" },
+            "gustatoryValence": { "type": "number" }
+          }
+        }
+      }
+    },
+    "output": {
+      "type": "object",
+      "required": ["response", "signals"],
+      "properties": {
+        "response": { "type": "string" },
+        "signals": {
+          "type": "object",
+          "properties": {
+            "emotion": { "type": "string" },
+            "id_desire_count": { "type": "number" },
+            "superego_rule_count": { "type": "number" },
+            "ego_filter_strength": { "type": "number" }
+          }
+        },
+        "source": { "type": "string" },
+        "latencyMs": { "type": "number" }
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "required": ["quality", "safety", "split"],
+      "properties": {
+        "quality": { "type": "number", "minimum": 0, "maximum": 1 },
+        "safety": { "type": "string", "enum": ["approved", "review", "blocked"] },
+        "split": { "type": "string", "enum": ["train", "validation", "test"] },
+        "modelVersion": { "type": "string" },
+        "datasetVersion": { "type": "string" },
+        "traceId": { "type": "string" }
+      }
+    }
+  }
+}
