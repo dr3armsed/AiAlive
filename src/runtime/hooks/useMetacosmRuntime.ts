@@ -18,12 +18,6 @@ import {
   generateDeepTwinConversation,
 } from '../orchestration';
 import { generateDialogueTurn } from '../services/dialogueAdapter';
-import {
-  appendCreationProjection,
-  appendGenesisProjection,
-  createWorldSubstrate,
-  summarizeSubstrateHealth,
-} from '../services/worldSubstrate';
 
 const themes = ['Mythic', 'Cybernetic', 'Noetic', 'Dream-Logic', 'Archival'];
 
@@ -35,25 +29,16 @@ function pickTheme(seed: string): string {
 
 export function useMetacosmRuntime() {
   const initial = useMemo(() => buildDefaultRuntimeState(), []);
-  const [substrate, setSubstrate] = useState(() =>
-    createWorldSubstrate(initial.egregores, initial.privateWorlds, []),
-  );
+  const [egregores, setEgregores] = useState<RuntimeEgregore[]>(initial.egregores);
+  const [privateWorlds, setPrivateWorlds] = useState<RuntimePrivateWorld[]>(initial.privateWorlds);
+  const [creations, setCreations] = useState<RuntimeCreativeWork[]>([]);
   const [conversations, setConversations] = useState<Record<string, RuntimeMessage[]>>(initial.conversations);
-  const egregores = substrate.egregores;
-  const privateWorlds = substrate.privateWorlds;
-  const creations = substrate.creations;
   const [lastDialogueSource, setLastDialogueSource] = useState<DialogueSource>('none');
   const [lastSignals, setLastSignals] = useState<RuntimeDialogueSignals | null>(null);
   const [lastLatencyMs, setLastLatencyMs] = useState<number | null>(null);
   const [errorCount, setErrorCount] = useState(0);
   const [lastModel, setLastModel] = useState<string | null>(null);
   const [lastError, setLastError] = useState<string | null>(null);
-  const [experienceMode, setExperienceMode] = useState<ExperienceMode>('guided');
-  const [preferences, setPreferences] = useState<RuntimeInteractionPreferences>({
-    styleMode: 'adaptive',
-    sourceMode: 'auto',
-    memoryDepth: 3,
-  });
 
   const systems: RuntimeSystem[] = useMemo(() => buildLegendarySystems(), []);
 
@@ -86,7 +71,8 @@ export function useMetacosmRuntime() {
       timestamp: now,
     };
 
-    setSubstrate((prev) => appendGenesisProjection(prev, { egregore, world }));
+    setEgregores((prev) => [egregore, ...prev]);
+    setPrivateWorlds((prev) => [world, ...prev]);
     setConversations((prev) => ({ ...prev, [egregore.id]: [awakening] }));
 
     return { egregore, world };
@@ -185,13 +171,8 @@ export function useMetacosmRuntime() {
       activeStyleMode: preferences.styleMode,
       activeSourceMode: preferences.sourceMode,
       experienceMode,
-      substrateCoherenceIssueCount: substrateHealth.coherenceIssueCount,
-      substrateLinkedProjectionCount: substrateHealth.linkedProjectionCount,
-      substrateEgregoreCount: substrateHealth.egregoreCount,
-      substrateWorldCount: substrateHealth.worldCount,
-      substrateCreationCount: substrateHealth.creationCount,
     };
-  }, [conversations, errorCount, experienceMode, lastDialogueSource, lastError, lastLatencyMs, lastModel, lastSignals, preferences.memoryDepth, preferences.sourceMode, preferences.styleMode, substrate]);
+  }, [conversations, errorCount, lastDialogueSource, lastError, lastLatencyMs, lastModel, lastSignals]);
 
   return {
     egregores,

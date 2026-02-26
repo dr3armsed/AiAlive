@@ -10,6 +10,7 @@ import { LegacyReactivationPanel } from './runtime/components/LegacyReactivation
 import { useMetacosmRuntime } from './runtime/hooks/useMetacosmRuntime';
 
 type Tab = 'genesis' | 'architect-twin' | 'conversation' | 'private-worlds' | 'creations' | 'systems' | 'legacy-reactivation' | 'integration';
+type Tab = 'genesis' | 'architect-twin' | 'conversation' | 'private-worlds' | 'creations' | 'systems' | 'integration';
 
 export function App() {
   const [activeTab, setActiveTab] = useState<Tab>('architect-twin');
@@ -42,18 +43,14 @@ export function App() {
       </div>
 
       <nav style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem', flexWrap: 'wrap' }}>
-        <button style={{ fontWeight: activeTab === 'architect-twin' ? 700 : 400 }} onClick={() => setActiveTab('architect-twin')}>Architect Twin</button>
-        <button style={{ fontWeight: activeTab === 'genesis' ? 700 : 400 }} onClick={() => setActiveTab('genesis')}>Genesis</button>
-        <button style={{ fontWeight: activeTab === 'conversation' ? 700 : 400 }} onClick={() => setActiveTab('conversation')}>Conversation</button>
-        <button style={{ fontWeight: activeTab === 'systems' ? 700 : 400 }} onClick={() => setActiveTab('systems')}>Systems</button>
-        {runtime.experienceMode === 'console' && (
-          <>
-            <button style={{ fontWeight: activeTab === 'private-worlds' ? 700 : 400 }} onClick={() => setActiveTab('private-worlds')}>Private Worlds</button>
-            <button style={{ fontWeight: activeTab === 'creations' ? 700 : 400 }} onClick={() => setActiveTab('creations')}>Creations</button>
-            <button style={{ fontWeight: activeTab === 'legacy-reactivation' ? 700 : 400 }} onClick={() => setActiveTab('legacy-reactivation')}>Legacy Reactivation</button>
-            <button style={{ fontWeight: activeTab === 'integration' ? 700 : 400 }} onClick={() => setActiveTab('integration')}>Integration Manifest</button>
-          </>
-        )}
+        <button onClick={() => setActiveTab('architect-twin')}>Architect Twin</button>
+        <button onClick={() => setActiveTab('genesis')}>Genesis</button>
+        <button onClick={() => setActiveTab('conversation')}>Conversation</button>
+        <button onClick={() => setActiveTab('private-worlds')}>Private Worlds</button>
+        <button onClick={() => setActiveTab('creations')}>Creations</button>
+        <button onClick={() => setActiveTab('systems')}>Systems</button>
+        <button onClick={() => setActiveTab('legacy-reactivation')}>Legacy Reactivation</button>
+        <button onClick={() => setActiveTab('integration')}>Integration Manifest</button>
       </nav>
 
       {activeTab === 'architect-twin' && (

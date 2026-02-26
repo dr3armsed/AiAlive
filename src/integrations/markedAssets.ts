@@ -16,24 +16,28 @@ export const markedAssets: MarkedAsset[] = [
     category: 'legacy-ui',
     integration: 'tracked',
     notes: 'Legacy component preserved and inventoried; runtime-safe adapter harness is wired, deeper behavior migration pending.',
+    notes: 'Legacy component preserved and inventoried; pending runtime adapter wiring.',
   },
   {
     path: 'src/legacy/MemoryExplorerView.tsx',
     category: 'legacy-ui',
     integration: 'tracked',
     notes: 'Legacy component preserved and inventoried; runtime-safe adapter harness is wired, deeper behavior migration pending.',
+    notes: 'Legacy component preserved and inventoried; pending runtime adapter wiring.',
   },
   {
     path: 'src/legacy/SystemConverseView.tsx',
     category: 'legacy-ui',
     integration: 'tracked',
     notes: 'Legacy component preserved and inventoried; runtime-safe adapter harness is wired, deeper behavior migration pending.',
+    notes: 'Legacy component preserved and inventoried; pending runtime adapter wiring.',
   },
   {
     path: 'src/legacy/WorldView.tsx',
     category: 'legacy-ui',
     integration: 'tracked',
     notes: 'Legacy component preserved and inventoried; runtime-safe adapter harness is wired, deeper behavior migration pending.',
+    notes: 'Legacy component preserved and inventoried; pending runtime adapter wiring.',
   },
   {
     path: 'src/legacy/OracleAI_925.ts',
@@ -64,6 +68,8 @@ export const markedAssets: MarkedAsset[] = [
     category: 'python-subsystems',
     integration: 'integrated',
     notes: 'Imported by runtime bridge to derive theory-formation hints.',
+    integration: 'tracked',
+    notes: 'Catalogued Python subsystem; not yet invoked from runtime middleware.',
   },
   {
     path: 'scripts/python/entity_management.py',
@@ -100,12 +106,16 @@ export const markedAssets: MarkedAsset[] = [
     category: 'state-artifacts',
     integration: 'integrated',
     notes: 'Counted by persistence artifact context for runtime bridge hints.',
+    integration: 'tracked',
+    notes: 'Organized and mergeable; not consumed by runtime turn processing.',
   },
   {
     path: 'artifacts/patches/*.txt',
     category: 'state-artifacts',
     integration: 'integrated',
     notes: 'Counted by persistence artifact context for runtime bridge hints.',
+    integration: 'tracked',
+    notes: 'Organized and mergeable; not consumed by runtime turn processing.',
   },
 ];
 

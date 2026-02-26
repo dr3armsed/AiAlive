@@ -80,12 +80,4 @@ export interface RuntimeTelemetry {
   errorCount: number;
   lastModel: string | null;
   lastError: string | null;
-  activeStyleMode: DialogueStyleMode;
-  activeSourceMode: DialogueSourceMode;
-  experienceMode: ExperienceMode;
-  substrateCoherenceIssueCount: number;
-  substrateLinkedProjectionCount: number;
-  substrateEgregoreCount: number;
-  substrateWorldCount: number;
-  substrateCreationCount: number;
 }

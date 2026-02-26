@@ -5,9 +5,6 @@ interface Props {
   egregores: RuntimeEgregore[];
   conversations: Record<string, RuntimeMessage[]>;
   onSend: (egregoreId: string, content: string) => Promise<void>;
-  lastDialogueSource?: string;
-  preferences: RuntimeInteractionPreferences;
-  onPreferencesChange: (next: RuntimeInteractionPreferences) => void;
 }
 
 const QUICK_PROMPTS = [
@@ -139,6 +136,32 @@ export function ConversationPanel({ egregores, conversations, onSend, lastDialog
             ))}
           </div>
           <small>Tip: press Ctrl/Cmd + Enter to send quickly.</small>
+          {selectedEgregore && (
+            <p>
+              <strong>Persona:</strong> {selectedEgregore.persona}
+            </p>
+          )}
+
+          <div style={{ border: '1px solid #444', borderRadius: 8, padding: '0.75rem', minHeight: 220 }}>
+            {history.length === 0 ? (
+              <p>No messages yet.</p>
+            ) : (
+              <ul>
+                {history.map((m) => (
+                  <li key={m.id}>
+                    <strong>{m.role === 'user' ? 'Architect' : 'Egregore'}:</strong> {m.content}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+
+          <textarea
+            value={draft}
+            rows={4}
+            onChange={(e) => setDraft(e.target.value)}
+            placeholder="Send a message to the selected Egregore"
+          />
           <button
             disabled={isSending || !selectedEgregoreId || draft.trim().length < 2}
             onClick={async () => {
