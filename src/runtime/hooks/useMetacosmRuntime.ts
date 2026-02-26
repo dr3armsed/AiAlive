@@ -146,7 +146,7 @@ export function useMetacosmRuntime() {
       authorId,
       createdAt: new Date().toISOString(),
     };
-    setCreations((prev) => [work, ...prev]);
+    setSubstrate((prev) => appendCreationProjection(prev, work));
     return work;
   };
 
@@ -158,6 +158,7 @@ export function useMetacosmRuntime() {
 
   const telemetry: RuntimeTelemetry = useMemo(() => {
     const all = Object.values(conversations).flat();
+    const substrateHealth = summarizeSubstrateHealth(substrate);
     return {
       totalMessages: all.length,
       unknownMessages: all.filter((m) => m.egregoreId === 'egregore_unknown').length,

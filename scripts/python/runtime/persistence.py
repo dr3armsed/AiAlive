@@ -13,6 +13,24 @@ DEFAULT_STATE = {
 }
 
 
+def _portable_data_root() -> Path:
+    override = os.environ.get("GENMETA_PORTABLE_DATA")
+    if override:
+        return Path(override)
+    return Path("data")
+
+
+def _state_file(name: str, fallback: str) -> str:
+    portable_candidate = _portable_data_root() / "state" / name
+    if portable_candidate.exists():
+        return str(portable_candidate)
+    return fallback
+
+
+def _artifact_glob(pattern: str) -> List[str]:
+    return glob.glob(pattern)
+
+
 def _load_json(path: str, default: Dict[str, Any]) -> Dict[str, Any]:
     if not os.path.exists(path):
         return default
