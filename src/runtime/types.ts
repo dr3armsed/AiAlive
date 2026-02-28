@@ -60,6 +60,18 @@ export type DialogueSource =
   | 'local-fallback'
   | 'none';
 
+
+export type DialogueStyleMode = 'poetic' | 'tactical' | 'adaptive';
+export type DialogueSourceMode = 'auto' | 'external-first' | 'local-first';
+export type ExperienceMode = 'guided' | 'console';
+export type RuntimeWorldMode = 'shared-world' | 'private-world';
+
+export interface RuntimeInteractionPreferences {
+  styleMode: DialogueStyleMode;
+  sourceMode: DialogueSourceMode;
+  memoryDepth: number;
+}
+
 export interface RuntimeTelemetry {
   totalMessages: number;
   unknownMessages: number;
@@ -69,8 +81,16 @@ export interface RuntimeTelemetry {
   errorCount: number;
   lastModel: string | null;
   lastError: string | null;
-export interface RuntimeTelemetry {
-  totalMessages: number;
-  unknownMessages: number;
-  lastDialogueSource: 'python-bridge' | 'local-fallback' | 'none';
+  activeStyleMode: DialogueStyleMode;
+  activeSourceMode: DialogueSourceMode;
+  experienceMode: ExperienceMode;
+  substrateCoherenceIssueCount: number;
+  substrateLinkedProjectionCount: number;
+  substrateEgregoreCount: number;
+  substrateWorldCount: number;
+  substrateCreationCount: number;
+  memoryEventCount: number;
+  pendingDatasetExampleCount: number;
+  lastMemoryTraceId: string | null;
+  privateWorldResidentCount: number;
 }

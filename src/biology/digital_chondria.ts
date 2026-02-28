@@ -237,11 +237,11 @@ export class DigitalChondria {
      */
     private updateEfficiencyScore(): void {
         if (this.mtDNA.length === 0) {
-            this.metabolicState.efficiencyScore = 0;
+            this.metabolicState.efficiency_score = 0;
             return;
         }
         
-        this.metabolicState.efficiencyScore = this.mtDNA.reduce(
+        this.metabolicState.efficiency_score = this.mtDNA.reduce(
             (sum, gene) => sum + gene.efficiency,
             0
         ) / this.mtDNA.length;
@@ -270,7 +270,7 @@ export class DigitalChondria {
 
 Energy (ATP): ${this.metabolicState.ATP_level.toFixed(1)} / ${this.metabolicState.peak_output}
 Basal Metabolism: ${this.metabolicState.basal_metabolism.toFixed(1)}
-Efficiency Score: ${(this.metabolicState.efficiencyScore * 100).toFixed(1)}%
+Efficiency Score: ${(this.metabolicState.efficiency_score * 100).toFixed(1)}%
 Oxidative Stress: ${(this.metabolicState.oxidative_stress * 100).toFixed(1)}%
 Mitophagy Queue: ${this.metabolicState.mitophagy_queue}
 
