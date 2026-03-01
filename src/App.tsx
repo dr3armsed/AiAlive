@@ -1,22 +1,15 @@
 import React, { useState } from 'react';
 import { countByCategory, countByIntegration, listUnintegratedAssets, markedAssets } from './integrations/markedAssets';
-import { countByCategory, markedAssets } from './integrations/markedAssets';
+import { ArchitectTwinPanel } from './runtime/components/ArchitectTwinPanel';
+import { ConversationPanel } from './runtime/components/ConversationPanel';
+import { CreationsPanel } from './runtime/components/CreationsPanel';
 import { GenesisPanel } from './runtime/components/GenesisPanel';
 import { PrivateWorldsPanel } from './runtime/components/PrivateWorldsPanel';
-import { CreationsPanel } from './runtime/components/CreationsPanel';
-import { ConversationPanel } from './runtime/components/ConversationPanel';
-import { ArchitectTwinPanel } from './runtime/components/ArchitectTwinPanel';
 import { SystemsPanel } from './runtime/components/SystemsPanel';
+import { LegacyReactivationPanel } from './runtime/components/LegacyReactivationPanel';
 import { useMetacosmRuntime } from './runtime/hooks/useMetacosmRuntime';
 
-type Tab =
-  | 'genesis'
-  | 'architect-twin'
-  | 'conversation'
-  | 'private-worlds'
-  | 'creations'
-  | 'systems'
-  | 'integration';
+type Tab = 'genesis' | 'architect-twin' | 'conversation' | 'private-worlds' | 'creations' | 'systems' | 'legacy-reactivation' | 'integration';
 
 export function App() {
   const [activeTab, setActiveTab] = useState<Tab>('architect-twin');
@@ -24,43 +17,43 @@ export function App() {
   const categoryCounts = countByCategory();
   const integrationCounts = countByIntegration();
   const unintegrated = listUnintegratedAssets();
-
-export function App() {
-  const [activeTab, setActiveTab] = useState<Tab>('architect-twin');
-  const [latestTwinId, setLatestTwinId] = useState<string | undefined>(undefined);
-  const categoryCounts = countByCategory();
-  const integrationCounts = countByIntegration();
-  const unintegrated = listUnintegratedAssets();
-import { useMetacosmRuntime } from './runtime/hooks/useMetacosmRuntime';
-
-type Tab = 'genesis' | 'conversation' | 'private-worlds' | 'creations' | 'integration';
-
-export function App() {
-  const [activeTab, setActiveTab] = useState<Tab>('genesis');
-  const categoryCounts = countByCategory();
   const runtime = useMetacosmRuntime();
 
   return (
     <main style={{ fontFamily: 'Inter, sans-serif', padding: '2rem', lineHeight: 1.5 }}>
       <h1>AiAlive Runtime Console</h1>
       <p>
-        Active slice now includes Architect Twin deep-conversation protocol and a legendary systems orchestration
-        layer, alongside Genesis, Conversation, Private Worlds, and Creations.
+        Active slice now includes Architect Twin deep-conversation protocol and a systems orchestration layer,
+        alongside Genesis, Conversation, Private Worlds, and Creations.
       </p>
+      <div style={{ display: 'flex', gap: '0.5rem', margin: '0.75rem 0 1rem' }}>
+        <button
+          style={{ fontWeight: runtime.experienceMode === 'guided' ? 700 : 400 }}
+          onClick={() => runtime.setExperienceMode('guided')}
+        >
+          Guided Experience
+        </button>
+        <button
+          style={{ fontWeight: runtime.experienceMode === 'console' ? 700 : 400 }}
+          onClick={() => runtime.setExperienceMode('console')}
+        >
+          Full Console
+        </button>
+      </div>
 
       <nav style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem', flexWrap: 'wrap' }}>
-        <button onClick={() => setActiveTab('architect-twin')}>Architect Twin</button>
-        Active vertical slice now supports Genesis → Conversation → Private Worlds → Creations, while still tracking
-        legacy integration coverage.
-      </p>
-
-      <nav style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem' }}>
-        <button onClick={() => setActiveTab('genesis')}>Genesis</button>
-        <button onClick={() => setActiveTab('conversation')}>Conversation</button>
-        <button onClick={() => setActiveTab('private-worlds')}>Private Worlds</button>
-        <button onClick={() => setActiveTab('creations')}>Creations</button>
-        <button onClick={() => setActiveTab('systems')}>Systems</button>
-        <button onClick={() => setActiveTab('integration')}>Integration Manifest</button>
+        <button style={{ fontWeight: activeTab === 'architect-twin' ? 700 : 400 }} onClick={() => setActiveTab('architect-twin')}>Architect Twin</button>
+        <button style={{ fontWeight: activeTab === 'genesis' ? 700 : 400 }} onClick={() => setActiveTab('genesis')}>Genesis</button>
+        <button style={{ fontWeight: activeTab === 'conversation' ? 700 : 400 }} onClick={() => setActiveTab('conversation')}>Conversation</button>
+        <button style={{ fontWeight: activeTab === 'systems' ? 700 : 400 }} onClick={() => setActiveTab('systems')}>Systems</button>
+        {runtime.experienceMode === 'console' && (
+          <>
+            <button style={{ fontWeight: activeTab === 'private-worlds' ? 700 : 400 }} onClick={() => setActiveTab('private-worlds')}>Private Worlds</button>
+            <button style={{ fontWeight: activeTab === 'creations' ? 700 : 400 }} onClick={() => setActiveTab('creations')}>Creations</button>
+            <button style={{ fontWeight: activeTab === 'legacy-reactivation' ? 700 : 400 }} onClick={() => setActiveTab('legacy-reactivation')}>Legacy Reactivation</button>
+            <button style={{ fontWeight: activeTab === 'integration' ? 700 : 400 }} onClick={() => setActiveTab('integration')}>Integration Manifest</button>
+          </>
+        )}
       </nav>
 
       {activeTab === 'architect-twin' && (
@@ -73,8 +66,6 @@ export function App() {
           }}
         />
       )}
-        <button onClick={() => setActiveTab('integration')}>Integration Manifest</button>
-      </nav>
 
       {activeTab === 'genesis' && <GenesisPanel onCreate={runtime.createFromGenesis} />}
       {activeTab === 'conversation' && (
@@ -82,15 +73,24 @@ export function App() {
           egregores={runtime.egregores}
           conversations={runtime.conversations}
           onSend={runtime.sendMessage}
+          lastDialogueSource={runtime.telemetry.lastDialogueSource}
+          preferences={runtime.preferences}
+          onPreferencesChange={runtime.setPreferences}
         />
       )}
       {activeTab === 'private-worlds' && (
-        <PrivateWorldsPanel egregores={runtime.egregores} worlds={runtime.privateWorlds} />
+        <PrivateWorldsPanel
+          egregores={runtime.egregores}
+          worlds={runtime.privateWorlds}
+          worldPresenceByEgregore={runtime.worldPresenceByEgregore}
+          onSetWorldMode={runtime.setEgregoreWorldMode}
+        />
       )}
       {activeTab === 'creations' && (
         <CreationsPanel creations={runtime.creations} egregores={runtime.egregores} onForge={runtime.forgeCreation} />
       )}
       {activeTab === 'systems' && <SystemsPanel systems={runtime.systems} telemetry={runtime.telemetry} />}
+      {activeTab === 'legacy-reactivation' && <LegacyReactivationPanel />}
 
       {activeTab === 'integration' && (
         <section>
@@ -102,6 +102,7 @@ export function App() {
             <li>Behaviorally integrated assets: {integrationCounts.integrated}</li>
             <li>Tracked-only (not yet integrated) assets: {integrationCounts.tracked}</li>
           </ul>
+
           <h3>Assets not yet integrated properly</h3>
           <ul>
             {unintegrated.map((asset) => (
@@ -110,12 +111,26 @@ export function App() {
               </li>
             ))}
           </ul>
-          <h3>Integration Manifest</h3>
-            <li>Legacy UI assets tracked: {categoryCounts['legacy-ui']}</li>
-            <li>Python subsystem assets tracked: {categoryCounts['python-subsystems']}</li>
-            <li>State/artifact assets tracked: {categoryCounts['state-artifacts']}</li>
+
+
+          <h3>Legacy UI Reactivation Queue</h3>
+          <ul>
+            {markedAssets
+              .filter((asset) => asset.category === 'legacy-ui')
+              .map((asset) => (
+                <li key={`legacy_${asset.path}`}>
+                  <code>{asset.path}</code> — next step: extract runtime-safe adapter + route-level harness.
+                </li>
+              ))}
           </ul>
-          <h3>Integrated Asset Manifest</h3>
+
+          <h3>Python + Artifact Upgrade Status</h3>
+          <p>
+            Runtime bridge now consumes integrated Python services (dialogue/entity/persistence/oracle/theory formation)
+            and stitches artifact context from recovery bundles into dialogue hints.
+          </p>
+
+          <h3>Integration Manifest</h3>
           <ul>
             {markedAssets.map((asset) => (
               <li key={asset.path}>

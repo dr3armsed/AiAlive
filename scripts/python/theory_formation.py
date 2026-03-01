@@ -255,3 +255,15 @@ class TheoryFormation:
             "count": len(self.theories),
             "last_updated": datetime.now().isoformat()
         }
+
+
+def derive_theory_hint(prompt: str, emotion: str) -> str:
+    """Generate a lightweight theory-formation cue for runtime dialogue."""
+    text = (prompt or "").lower()
+    if any(token in text for token in ["why", "cause", "because", "explain"]):
+        return "causal-modeling"
+    if any(token in text for token in ["future", "next", "trend", "forecast"]):
+        return "scenario-extrapolation"
+    if emotion == "vigilant":
+        return "risk-boundary-analysis"
+    return "adaptive-hypothesis"
