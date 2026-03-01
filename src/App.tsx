@@ -76,7 +76,12 @@ export function App() {
         />
       )}
       {activeTab === 'private-worlds' && (
-        <PrivateWorldsPanel egregores={runtime.egregores} worlds={runtime.privateWorlds} />
+        <PrivateWorldsPanel
+          egregores={runtime.egregores}
+          worlds={runtime.privateWorlds}
+          worldPresenceByEgregore={runtime.worldPresenceByEgregore}
+          onSetWorldMode={runtime.setEgregoreWorldMode}
+        />
       )}
       {activeTab === 'creations' && (
         <CreationsPanel creations={runtime.creations} egregores={runtime.egregores} onForge={runtime.forgeCreation} />

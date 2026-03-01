@@ -17,6 +17,13 @@ export function ConversationPanel({ egregores, conversations, onSend, lastDialog
   const [selectedEgregoreId, setSelectedEgregoreId] = useState('');
   const [draft, setDraft] = useState('');
   const [isSending, setIsSending] = useState(false);
+  const [viewMode, setViewMode] = useState<ConversationViewMode>('thread');
+
+  useEffect(() => {
+    if (!selectedEgregoreId && egregores.length > 0) {
+      setSelectedEgregoreId(egregores[0].id);
+    }
+  }, [egregores, selectedEgregoreId]);
 
   useEffect(() => {
     if (!selectedEgregoreId && egregores.length > 0) {
@@ -30,6 +37,17 @@ export function ConversationPanel({ egregores, conversations, onSend, lastDialog
   );
 
   const history = selectedEgregoreId ? conversations[selectedEgregoreId] || [] : [];
+  const conversationStats = useMemo(() => {
+    const userMessages = history.filter((message) => message.role === 'user').length;
+    const egregoreMessages = history.length - userMessages;
+    const approxTokens = Math.round(history.reduce((acc, message) => acc + message.content.length / 4, 0));
+    return {
+      userMessages,
+      egregoreMessages,
+      totalMessages: history.length,
+      approxTokens,
+    };
+  }, [history]);
 
   return (
     <section>

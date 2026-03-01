@@ -135,6 +135,26 @@ export function useMetacosmRuntime() {
       ...prev,
       [egregoreId]: [...(prev[egregoreId] || []), egregoreMessage],
     }));
+
+    memoryPipeline.appendEvent({
+      egregoreId,
+      egregoreName: egregore.name,
+      userMessage: content,
+      egregoreMessage: result.response,
+      source: result.source,
+      signals: result.signals,
+      styleMode: preferences.styleMode,
+      sourceMode: preferences.sourceMode,
+      memoryDepth: preferences.memoryDepth,
+    });
+    setMemoryStats(memoryPipeline.getStats());
+  };
+
+  const setEgregoreWorldMode = (egregoreId: string, targetMode: 'shared-world' | 'private-world') => {
+    setWorldPresenceByEgregore((prev) => {
+      const transition = resolveWorldTransition(prev, egregores, privateWorlds, egregoreId, targetMode);
+      return transition.ok ? transition.worldPresence : prev;
+    });
   };
 
   const forgeCreation = (title: string, type: string, content: string, authorId: string) => {
@@ -182,9 +202,11 @@ export function useMetacosmRuntime() {
     systems,
     telemetry,
     worldByEgregore,
+    worldPresenceByEgregore,
     createFromGenesis,
     birthArchitectTwin,
     sendMessage,
+    setEgregoreWorldMode,
     forgeCreation,
     experienceMode,
     setExperienceMode,

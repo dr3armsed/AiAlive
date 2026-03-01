@@ -16,12 +16,20 @@ function emotionToProfile(emotion: string) {
 }
 
 export function SystemsPanel({ systems, telemetry }: Props) {
+  const [viewMode, setViewMode] = useState<SystemsViewMode>('cards');
   const emotionProfile = telemetry.lastSignals ? emotionToProfile(telemetry.lastSignals.emotion) : null;
 
   return (
     <section>
       <h2>Legendary Systems Orchestrator</h2>
       <p>Integrated systems and subsystems currently wired into the active runtime slice.</p>
+      <label style={{ display: 'inline-grid', gap: '0.25rem', marginBottom: '0.5rem' }}>
+        Systems view mode
+        <select value={viewMode} onChange={(event) => setViewMode(event.target.value as SystemsViewMode)}>
+          <option value="cards">Diagnostic Cards</option>
+          <option value="list">Classic List</option>
+        </select>
+      </label>
       <p>
         Telemetry — total messages: <strong>{telemetry.totalMessages}</strong>, Unknown messages:{' '}
         <strong>{telemetry.unknownMessages}</strong>, dialogue source: <strong>{telemetry.lastDialogueSource}</strong>
