@@ -64,7 +64,6 @@ export type DialogueSource =
 export type DialogueStyleMode = 'poetic' | 'tactical' | 'adaptive';
 export type DialogueSourceMode = 'auto' | 'external-first' | 'local-first';
 export type ExperienceMode = 'guided' | 'console';
-export type RuntimeWorldMode = 'shared-world' | 'private-world';
 
 export interface RuntimeInteractionPreferences {
   styleMode: DialogueStyleMode;
@@ -81,16 +80,4 @@ export interface RuntimeTelemetry {
   errorCount: number;
   lastModel: string | null;
   lastError: string | null;
-  activeStyleMode: DialogueStyleMode;
-  activeSourceMode: DialogueSourceMode;
-  experienceMode: ExperienceMode;
-  substrateCoherenceIssueCount: number;
-  substrateLinkedProjectionCount: number;
-  substrateEgregoreCount: number;
-  substrateWorldCount: number;
-  substrateCreationCount: number;
-  memoryEventCount: number;
-  pendingDatasetExampleCount: number;
-  lastMemoryTraceId: string | null;
-  privateWorldResidentCount: number;
 }

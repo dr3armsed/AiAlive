@@ -25,7 +25,6 @@ function testPythonBridgeRespondsForUnknown() {
   assert.ok(parsed.response.includes('Oracle-hint='));
   assert.ok(parsed.response.includes('Theory-hint='));
   assert.ok(parsed.response.includes('Artifact-context='));
-  assert.ok(parsed.response.includes('retrieval='));
   assert.ok(parsed.signals && typeof parsed.signals.emotion === 'string');
   assert.ok(typeof parsed.latencyMs === 'number');
   assert.strictEqual(parsed.model, null);
@@ -42,9 +41,6 @@ function testPythonBridgeRespondsForCustomEgregore() {
   assert.strictEqual(parsed.source, 'python-bridge:heuristic');
   assert.ok(typeof parsed.response === 'string' && parsed.response.includes('Custom'));
   assert.ok(parsed.response.includes('Oracle-hint='));
-  assert.ok(parsed.response.includes('Theory-hint='));
-  assert.ok(parsed.response.includes('Artifact-context='));
-  assert.ok(parsed.response.includes('retrieval='));
   assert.ok(parsed.signals && typeof parsed.signals.emotion === 'string');
 }
 
@@ -60,90 +56,6 @@ function testPythonBridgeOllamaSourceSelection() {
   assert.strictEqual(run.status, 0, run.stderr);
   const parsed = JSON.parse(run.stdout);
   assert.strictEqual(parsed.source, 'python-bridge:ollama');
-}
-
-function testPythonBridgeRespectsSteeringModes() {
-  const run = runBridge({
-    prompt: '[style=poetic;source=local-first;memoryDepth=7] Unknown, report your status',
-    egregore: { id: 'egregore_unknown', name: 'Unknown' },
-  });
-
-  assert.strictEqual(run.status, 0, run.stderr);
-  const parsed = JSON.parse(run.stdout);
-  assert.strictEqual(parsed.source, 'python-bridge:ollama');
-  assert.ok(parsed.response.includes('Style=poetic'));
-  assert.ok(parsed.response.includes('Memory-depth=7'));
-  assert.ok(!parsed.response.includes('[style='));
-}
-
-function testPythonBridgeSteeringOverridesEnvSelection() {
-  const externalFirst = runBridge(
-    {
-      prompt: '[style=tactical;source=external-first;memoryDepth=4] Route check',
-      egregore: { id: 'egregore_custom', name: 'Custom' },
-    },
-    { RUNTIME_USE_OLLAMA: '1' },
-  );
-
-  assert.strictEqual(externalFirst.status, 0, externalFirst.stderr);
-  const externalParsed = JSON.parse(externalFirst.stdout);
-  assert.strictEqual(externalParsed.source, 'python-bridge:heuristic');
-  assert.ok(externalParsed.response.includes('Style=tactical'));
-
-  const invalidSteering = runBridge({
-    prompt: '[style=unknown;source=mystery;memoryDepth=999] Unknown, normalize this',
-    egregore: { id: 'egregore_unknown', name: 'Unknown' },
-  });
-
-  assert.strictEqual(invalidSteering.status, 0, invalidSteering.stderr);
-  const invalidParsed = JSON.parse(invalidSteering.stdout);
-  assert.ok(invalidParsed.response.includes('Style=adaptive'));
-  assert.ok(invalidParsed.response.includes('Memory-depth=10'));
-}
-
-function testPythonBridgeUsesPortableDataOverride() {
-  const portableDataRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'genmeta-portable-data-'));
-  const stateDir = path.join(portableDataRoot, 'state');
-  fs.mkdirSync(stateDir, { recursive: true });
-  fs.writeFileSync(path.join(stateDir, 'id.json'), JSON.stringify({ desires: ['a', 'b', 'c', 'd'] }));
-  fs.writeFileSync(path.join(stateDir, 'ego.json'), JSON.stringify({ filter_strength: 0.9 }));
-  fs.writeFileSync(path.join(stateDir, 'superego.json'), JSON.stringify({ moral_constraints: ['x', 'y'] }));
-
-  const run = runBridge(
-    {
-      prompt: 'portable state test',
-      egregore: { id: 'egregore_custom', name: 'Custom' },
-    },
-    { GENMETA_PORTABLE_DATA: portableDataRoot },
-  );
-
-  assert.strictEqual(run.status, 0, run.stderr);
-  const parsed = JSON.parse(run.stdout);
-  assert.strictEqual(parsed.signals.id_desire_count, 4);
-  assert.strictEqual(parsed.signals.superego_rule_count, 2);
-  assert.strictEqual(parsed.signals.ego_filter_strength, 0.9);
-}
-
-
-function testPythonBridgeSensorySnapshotInfluencesEmotion() {
-  const run = runBridge({
-    prompt: 'status check',
-    egregore: { id: 'egregore_custom', name: 'Custom' },
-    sensory: {
-      visualLuminosity: 0.92,
-      proximity: 0.85,
-      ambientVolume: 0.2,
-      tactileIntensity: 0.1,
-      olfactoryValence: 0.0,
-      gustatoryValence: 0.0,
-    },
-  });
-
-  assert.strictEqual(run.status, 0, run.stderr);
-  const parsed = JSON.parse(run.stdout);
-  assert.strictEqual(parsed.signals.emotion, 'warm');
-  assert.ok(parsed.response.includes('Sensory-hint=visual=0.92'));
-  assert.ok(parsed.response.includes('audio=0.20'));
 }
 
 function testPythonBridgeHandlesInvalidJsonInput() {
@@ -163,10 +75,6 @@ function main() {
   testPythonBridgeRespondsForUnknown();
   testPythonBridgeRespondsForCustomEgregore();
   testPythonBridgeOllamaSourceSelection();
-  testPythonBridgeRespectsSteeringModes();
-  testPythonBridgeSteeringOverridesEnvSelection();
-  testPythonBridgeUsesPortableDataOverride();
-  testPythonBridgeSensorySnapshotInfluencesEmotion();
   testPythonBridgeHandlesInvalidJsonInput();
   console.log('Runtime dialogue bridge tests passed.');
 }

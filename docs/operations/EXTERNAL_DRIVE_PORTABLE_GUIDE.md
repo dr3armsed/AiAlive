@@ -102,5 +102,5 @@ Use:
 npm run portable:checks
 ```
 
-This runs a portable verification pipeline (`build` + `test:bridge` + `test:portable` + `test:substrate`) to validate bridge behavior, portable bootstrap paths, and substrate coherence foundations.
+This runs a portable verification pipeline (`build` + `test:bridge` + `test:portable`) to validate bridge behavior and portable bootstrap paths.
 

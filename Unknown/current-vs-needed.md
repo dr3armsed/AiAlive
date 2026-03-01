@@ -22,9 +22,6 @@
 ## What still needs to be created/wired
 
 ### A) Internal API (training and memory services)
-Partially implemented:
-- Runtime now persists conversation turn-pairs to a local durable memory pipeline (`memoryPipeline.ts`) and can derive pending dataset examples from those events.
-
 Missing today:
 - Durable memory write/read API for conversation events.
 - Dataset curation API (raw -> cleaned -> train/eval split).
@@ -50,6 +47,6 @@ Missing today:
 
 ### E) Static -> persistent conversion
 Missing today:
-- Server-backed persistent store for conversations beyond browser-local runtime storage.
+- Persistent store for conversations beyond in-memory React state.
 - Scheduled ingestion from conversation logs into dataset store.
 - Approval workflow before data becomes training-eligible.

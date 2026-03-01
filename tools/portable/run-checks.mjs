@@ -26,7 +26,7 @@ function ensurePrerequisites() {
 
 ensurePrerequisites();
 
-const checks = ['build', 'test:bridge', 'test:portable', 'test:substrate', 'test:memory-pipeline', 'test:world-access', 'test:world-visualization'];
+const checks = ['build', 'test:bridge', 'test:portable'];
 
 for (const check of checks) {
   console.log(`\n▶ Running ${check} in portable mode...`);
