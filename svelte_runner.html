@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Svelte Shadow Runner</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500&family=Sora:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --font-sans: 'Sora', sans-serif;
+            --font-mono: 'Roboto Mono', monospace;
+            --color-background: #010409;
+            --color-surface-1: rgba(16, 19, 28, 0.5);
+            --color-text-primary: #E6EDF3;
+            --color-text-secondary: #8D96A0;
+            --color-border-primary: rgba(200, 220, 255, 0.1);
+            --color-accent-blue: #58A6FF;
+            --color-accent-teal: #39C5BB;
+        }
+        body {
+            font-family: var(--font-sans);
+            background-color: var(--color-background);
+            color: var(--color-text-primary);
+        }
+    </style>
+    <script type="importmap">
+    {
+      "imports": {
+        "svelte": "https://esm.sh/svelte@4.2.18?dev",
+        "svelte/internal": "https://esm.sh/svelte@4.2.18/internal?dev",
+        "svelte/store": "https://esm.sh/svelte@4.2.18/store?dev"
+      }
+    }
+    </script>
+</head>
+<body>
+    <div id="app"></div>
+    <script type="module" src="/svelte_runner/main.js"></script>
+</body>
+</html>

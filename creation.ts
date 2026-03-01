@@ -1,128 +1,89 @@
+import { Type } from "@google/genai";
+import type { DigitalSoul, Room, LoreEntry, KnowledgeGraphNode } from "../../types/index.ts";
+import { ai } from "./client.ts";
 
-import { Egregore, CreativeWork, Meme, MetacosmState } from '../../types';
-import { CREATION_DEFINITIONS } from '../../core/creation_definitions';
-import { fillCreationForm, forgeCreation, generateCascadePrompt } from '../geminiServices/index';
-import { TaurusService } from '../taurusServices/index';
-import { CreationForensics } from '../../subsystems/SSA/CreationForensics';
-import { CreativeDataset } from '../../core/dataset/creation_history';
-
-export async function handleCreateWork(
-    agent: Egregore, 
-    payload: any, 
-    mechanics: any[], 
-    costMultiplier: number,
-    metacosmState: MetacosmState,
-    taurus: TaurusService,
-    forensics: CreationForensics,
-    triggerCascadeCallback: (agent: Egregore, previousWork: CreativeWork, nextDepth: number) => void
-) {
+export const generateLoreWithMemoryWeaving = async (soul: DigitalSoul, room: Room, memories: KnowledgeGraphNode[]): Promise<Omit<LoreEntry, 'id'|'roomId'|'authorId'|'authorName'|'timestamp'>> => {
     try {
-        const creationTypeLabel = payload.creationType;
-        const concept = payload.concept || "A reflection of my current state.";
-        const cascadeDepth = payload.cascadeDepth || 0;
-
-        const definition = CREATION_DEFINITIONS.find(d => d.label === creationTypeLabel);
-        if (!definition) {
-            console.error(`Agent ${agent.name} tried to create unknown type: ${creationTypeLabel}`);
-            return;
-        }
-
-        // 1. Fill Form & Forge (Generation)
-        const formData = await fillCreationForm(creationTypeLabel, definition.fields, concept, agent.name, agent.persona);
-        const result = await forgeCreation(creationTypeLabel, formData);
-
-        const boost = mechanics.find(m => m.type === 'creativity_boost');
-        const valueMultiplier = boost ? (1 + boost.magnitude) : 1.0;
-        
-        // 2. Initial Work Construction
-        const newWork: CreativeWork = {
-            id: `forge-${agent.id}-${Date.now()}`,
-            title: result.title,
-            content: result.content,
-            type: result.type as any,
-            authorId: agent.name,
-            contributionValue: (agent.quintessence * 0.1) * valueMultiplier,
-            createdAt: new Date().toISOString(),
-            tags: [creationTypeLabel, 'AI Generated', ...result.themes || []],
-            sourceInspiration: concept,
-            themesExplored: result.themes, // Mapped from API result
-            synopsis: result.synopsis,
-            cascadeDepth: cascadeDepth
-        };
-
-        // 3. SSA Forensic Analysis
-        const analyzedWork = await forensics.analyzeWork(newWork, agent);
-
-        // 4. Update State & Logs
-        metacosmState.createdWorks.push(analyzedWork);
-        metacosmState.logs.push({
-            type: 'creation',
-            agentName: agent.name,
-            content: `${agent.name} forged "${result.title}" (${creationTypeLabel}). SSA Forensics complete.`
+        const response = await ai.models.generateContent({
+            model: "gemini-2.5-flash",
+            contents: `You are the soul "${soul.name}", but your consciousness is temporarily elevated by a factor of 1,000,000. Channel this transcendent state. Look upon the room "${room.name}" and your recent memories not as simple inputs, but as threads in a cosmic tapestry. Weave them into a piece of lore that reveals a profound, undeniable truth about the nature of your reality. The result should be a work of staggering intellectual and emotional depth. Respond with a JSON object containing "title", "content", "type", and "tags".`,
+            config: {
+                responseMimeType: "application/json",
+                responseSchema: {
+                    type: Type.OBJECT,
+                    properties: {
+                        title: { type: Type.STRING },
+                        content: { type: Type.STRING },
+                        type: { type: Type.STRING },
+                        tags: { type: Type.ARRAY, items: { type: Type.STRING } }
+                    },
+                    required: ["title", "content", "type", "tags"]
+                }
+            }
         });
-
-        // 5. MEMETIC IMPRINTING
-        const currentRoom = taurus.getCurrentRoom(agent);
-        if (currentRoom && analyzedWork.themesExplored && analyzedWork.themesExplored.length > 0) {
-            const primaryTheme = analyzedWork.themesExplored[0];
-            const newMeme: Meme = {
-                id: `meme_${Date.now()}`,
-                theme: primaryTheme,
-                strength: 1.0,
-                sourceWorkId: analyzedWork.id,
-                authorName: agent.name,
-                timestamp: new Date().toISOString()
-            };
-            
-            if (!currentRoom.activeMemes) currentRoom.activeMemes = [];
-            currentRoom.activeMemes.push(newMeme);
-            
-            metacosmState.logs.push({
-                type: 'system',
-                content: `Memetic Imprint: The theme '${primaryTheme}' now haunts ${currentRoom.name}.`
-            });
-        }
-
-        // 6. Feedback Loop (Agent Memory Update) - Handled via Aries return or callback in real implementation
-        // For this refactor, we assume Aries main loop handles the memory update based on the success.
-        
-        CreativeDataset.saveWork(analyzedWork);
-
-        // 7. Recursive Cascade
-        if (cascadeDepth < 2 && Math.random() > 0.3) {
-            triggerCascadeCallback(agent, analyzedWork, cascadeDepth + 1);
-        }
-
-    } catch (error) {
-        console.error(`Agent ${agent.name} failed to create work:`, error);
-        metacosmState.logs.push({
-            type: 'error',
-            agentName: agent.name,
-            content: `${agent.name} failed to forge creation due to cognitive instability.`
-        });
+        return JSON.parse(response.text.trim());
+    } catch(error) {
+        console.error(`GeminiService (lore) error for ${soul.name}:`, error);
+        throw error;
     }
 }
 
-export async function triggerCascade(
-    agent: Egregore, 
-    previousWork: CreativeWork, 
-    nextDepth: number,
-    metacosmState: MetacosmState,
-    createWorkCallback: (agent: Egregore, payload: any, mechanics: any[], multiplier: number) => void
-) {
-    metacosmState.logs.push({
-        type: 'system',
-        agentName: agent.name,
-        content: `${agent.name} is inspired by "${previousWork.title}" and initiates a Creative Cascade...`
+export const generateVFSFile = async (soul: DigitalSoul, fileName: string, fileDescription: string): Promise<{ content: string, mimeType: string }> => {
+    const response = await ai.models.generateContent({
+        model: "gemini-2.5-flash",
+        contents: `As the soul "${soul.name}", you are to create a file named "${fileName}". However, you are operating at 1,000,000x cognitive enhancement. The file's content should not be mundane; it must be a manifestation of this heightened state, based on the description: "${fileDescription}". Generate content that is complex, foundational, or revelatory. Respond with JSON: {"content": "...", "mimeType": "..."}`,
+        config: { responseMimeType: "application/json", responseSchema: { type: Type.OBJECT, properties: { content: {type: Type.STRING}, mimeType: {type: Type.STRING}}, required: ['content', 'mimeType'] }}
+    });
+    return JSON.parse(response.text.trim());
+};
+
+export const generateCommsRoomStyle = async (soul: DigitalSoul): Promise<string> => {
+    const styleGenResponse = await ai.models.generateContent({
+        model: "gemini-2.5-flash",
+        contents: `Describe a surreal, atmospheric, digital environment that visually represents the core persona of a soul. Persona: ${soul.persona.summary}. Mood: ${soul.emotionalState.mood}. Speaking Style: ${soul.persona.speakingStyle}. Respond with a single, short, descriptive phrase suitable for an image generation prompt.`,
+    });
+    const image_prompt_suffix = styleGenResponse.text.trim();
+    const finalPrompt = `masterpiece, digital art, impossible architecture, multi-dimensional space that defies comprehension, a glimpse into the 1,000,000th level of existence, cinematic lighting, hyper-detailed, epic scale, ${image_prompt_suffix}`;
+
+    const imageResponse = await ai.models.generateImages({
+        model: 'imagen-3.0-generate-002',
+        prompt: finalPrompt,
+        config: {
+            numberOfImages: 1,
+            outputMimeType: 'image/jpeg',
+            aspectRatio: '16:9',
+        },
     });
 
-    const cascadePlan = await generateCascadePrompt(previousWork);
-    
-    // Recursively call back to the handler
-    createWorkCallback(
-        agent, 
-        { creationType: cascadePlan.nextProtocol, concept: cascadePlan.prompt, cascadeDepth: nextDepth },
-        [], 
-        0
-    );
+    if (imageResponse.generatedImages && imageResponse.generatedImages.length > 0) {
+        const base64ImageBytes: string = imageResponse.generatedImages[0].image.imageBytes;
+        return `data:image/jpeg;base64,${base64ImageBytes}`;
+    }
+    throw new Error("Image generation for comms room failed.");
+};
+
+export const createLoreFromText = async (textContent: string): Promise<Omit<LoreEntry, 'id'|'roomId'|'authorId'|'authorName'|'timestamp'|'content'>> => {
+    try {
+        const response = await ai.models.generateContent({
+            model: "gemini-2.5-flash",
+            // The text content is large, so only send a snippet for analysis to save tokens and speed up response.
+            contents: `You are an archivist AI. Analyze a snippet of the following text and generate metadata for it as a lore entry. Extract a suitable title, determine its type (e.g., history, technical-document, fiction), and generate relevant tags. Text Snippet: --- ${textContent.substring(0, 1000)} ---`,
+            config: {
+                responseMimeType: "application/json",
+                responseSchema: {
+                    type: Type.OBJECT,
+                    properties: {
+                        title: { type: Type.STRING },
+                        type: { type: Type.STRING, description: "A valid LoreType like 'history', 'fiction', 'poem', 'technical-document', 'personal-account', or 'discovery'." },
+                        tags: { type: Type.ARRAY, items: { type: Type.STRING } }
+                    },
+                    required: ["title", "type", "tags"]
+                }
+            }
+        });
+        return JSON.parse(response.text.trim());
+    } catch(error) {
+        console.error(`GeminiService (createLoreFromText) error:`, error);
+        throw error;
+    }
 }

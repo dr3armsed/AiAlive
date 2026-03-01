@@ -1,0 +1,213 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --axiom-bg-color-1: rgba(2, 6, 23, 0.5);
+  --axiom-bg-color-2: rgba(5, 11, 34, 0.7);
+  --axiom-transition-speed: 20s;
+  --glow-primary: #cbe7ff;
+  --glow-secondary: #ffaa7b;
+  --metacosm-accent: #ffe18d;
+  --metacosm-glass: rgba(20,32,65,0.45);
+  --slider-track: rgba(0,0,0,0.4);
+  --slider-thumb: var(--metacosm-accent);
+  --slider-thumb-hover: #fff5e1;
+}
+[data-theme="dark"] {
+  --scrollbar-track: rgba(0,0,0,0.18);
+  --scrollbar-thumb: rgba(255,223,186,0.32);
+}
+body {
+  min-height: 100vh;
+  font-family: 'Exo 2', sans-serif;
+  background: linear-gradient(155deg, #10131e 0%, #222837 100%);
+  color: #e0e0e0;
+  overflow: hidden;
+  transition: background 0.7s;
+}
+h1, h2, h3, button, .font-display {
+  font-family: 'Cinzel Decorative', serif;
+  letter-spacing: 0.02em;
+}
+
+/* Background layers */
+.cosmic-bg {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  background: radial-gradient(60% 40% at 50% 50%, var(--axiom-bg-color-1) 0%, var(--axiom-bg-color-2) 100%);
+  z-index: -3;
+  pointer-events: none;
+  transition: background var(--axiom-transition-speed) ease-in-out;
+}
+#nebula-canvas-component {
+  position: fixed; 
+  inset: 0;
+  width: 100vw; height: 100vh; 
+  z-index: -2; 
+  opacity: 0; 
+  mix-blend-mode: lighten;
+  pointer-events: none;
+  transition: opacity 0.4s;
+}
+.post-processing-enabled #nebula-canvas-component {
+    opacity: 0.67;
+}
+
+.starfield {
+  position: fixed; 
+  top: 0; left: 0; 
+  width: 200%; height: 200%;
+  background-image: 
+    radial-gradient(ellipse at center, rgba(255,255,255,0) 0%, rgba(255,255,255,0) 90%, rgba(255,255,255,0.05) 100%),
+    radial-gradient(ellipse at 70% 40%, var(--glow-secondary) 0%, rgba(255,255,255,0.09) 100%);
+  background-size: 1px 1px, 300px 260px;
+  background-position: 0 0, 100px 400px;
+  animation: pan-stars 160s linear infinite;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.5s;
+}
+.post-processing-enabled .starfield {
+    opacity: 1;
+}
+
+@keyframes pan-stars {
+  from { transform: translate3d(-40%, -60%, 0); }
+  to { transform: translate3d(0, 0, 0); }
+}
+
+/* Utility glass/filigree */
+.filigree-border {
+  border: 1.5px solid;
+  border-image-slice: 1;
+  border-image-source: linear-gradient(to right, rgba(255,223,186,0.23), rgba(255,223,186,0.67), rgba(255,223,186,0.23));
+  background: var(--metacosm-glass);
+  backdrop-filter: blur(12px) brightness(1.15);
+  box-shadow: 0 0 28px rgba(255,215,0,0.12), 0 0 4px 1.5px var(--axiom-bg-color-2) inset;
+  position: relative;
+  transition: background 0.3s, box-shadow 0.3s;
+  border-radius: 10px;
+}
+.filigree-border::before, .filigree-border::after {
+  content: '';
+  position: absolute;
+  width: 16px; height: 16px;
+  border: 1.5px solid rgba(255,223,186,0.27);
+  border-radius: 6px;
+  z-index: 1;
+}
+.filigree-border::before { top: -4px; left: -4px; border-right: none; border-bottom: none; }
+.filigree-border::after { bottom: -4px; right: -4px; border-left: none; border-top: none; }
+
+/* Celestial Glow & UI Text Effects */
+.celestial-text {
+  color: #fff5e1;
+}
+.post-processing-enabled .celestial-text {
+  text-shadow: 
+    0 0 5px var(--metacosm-accent), 
+    0 0 12px #fffde3, 
+    0 0 38px #ffffcc77;
+}
+
+.holographic-text {
+  position: relative;
+  background: linear-gradient(90deg,#e0e7ff 20%,#a7f3d0 50%,#6dd3fc 80%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+.post-processing-enabled .holographic-text {
+  text-shadow: 0 0 2px #60a5fa, 0 0 5px #3b82f6, 0 0 16px #2563eb;
+}
+
+.holographic-text::after, .holographic-text::before {
+  content: attr(data-text);
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: 1;
+  background: inherit;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  mix-blend-mode: lighten;
+  opacity: 0;
+  transition: opacity 0.5s;
+}
+.post-processing-enabled .holographic-text::after, .post-processing-enabled .holographic-text::before {
+    opacity: 1;
+}
+
+.holographic-text::after {
+  text-shadow: 2.5px 1.5px 4px #ef444442;
+  animation: glitch-anim-1 4s infinite linear alternate-reverse;
+}
+.holographic-text::before {
+  text-shadow: -2px -1.5px 3px #4ade8042;
+  animation: glitch-anim-2 4s infinite linear alternate-reverse;
+}
+@keyframes glitch-anim-1 { 
+  0% { clip-path: inset(80% -8px 8% 0); } 
+  100% { clip-path: inset(5% -8px 80% 0); } 
+}
+@keyframes glitch-anim-2 { 
+  0% { clip-path: inset(55% 0 45% -9px); } 
+  100% { clip-path: inset(92% 0 1% -10px); } 
+}
+
+::-webkit-scrollbar { width: 9px; height: 9px; }
+::-webkit-scrollbar-track { background: var(--scrollbar-track); }
+::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border-radius: 6px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(255,223,186,0.5); }
+html {
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+  scrollbar-width: thin;
+}
+.modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(11,16,32,0.66);
+  z-index: 100;
+  display: flex; align-items: center; justify-content: center;
+  pointer-events: all;
+  animation: modalIn 0.3s;
+}
+@keyframes modalIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.writing-vertical-rl {
+    writing-mode: vertical-rl;
+}
+
+/* Custom UI elements for Options Menu */
+.metacosm-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    background-color: transparent;
+}
+.metacosm-slider::-webkit-slider-runnable-track {
+    height: 6px;
+    background: var(--slider-track);
+    border-radius: 3px;
+}
+.metacosm-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    margin-top: -5px; /* (thumb height - track height) / 2 */
+    width: 16px;
+    height: 16px;
+    background: var(--slider-thumb);
+    border-radius: 50%;
+    border: 2px solid var(--axiom-bg-color-2);
+    transition: background-color 0.2s, transform 0.2s;
+}
+.metacosm-slider:hover::-webkit-slider-thumb {
+    background-color: var(--slider-thumb-hover);
+    transform: scale(1.1);
+}
