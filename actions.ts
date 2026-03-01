@@ -1,259 +1,135 @@
 
-import { Egregore, ActionResult, ForumPost, ForumThread } from '../../types';
-import { InstructionKey } from '../../digital_dna/instructions';
-import { generateRoomExpansion } from '../geminiServices/index';
-import { Metacosm } from '../../core/metacosm';
-import { TaurusService } from '../taurusServices/index';
+import type {
+    ChatMessage, SystemUpgradeProposal, PrivateChat, ForumPost, ForumThread, Author, PromptInjection
+} from './communication';
+import type {
+    User, UserId, EgregoreArchetype, Egregore, EgregoreId, PersonalityProfile, Faction, FactionId, PersonalThought, CreativeWork, DigitalObject, Ghost, Ancilla, AncillaId, LoreFragment, Paradox, ParadoxId, XenoArtifact, Directive, PrivateChatId, ForumPostId
+} from './entities';
+import type { AnyProject, ProjectId } from './projects';
+import type {
+    SystemConfig, VisualGlit, SpectreType, PocketWorkshop, PocketWorkshopId, UUID, SystemPersonality, GlyphType, AnyContinuityEntry, SpectreState
+} from './system';
+import type { MetacosmState } from './state';
+import type {
+    Stairwell, ConstructionSite, CosmicAxioms, RoomId, Floor, DoorId, Room, Wall, Door, Vector, WorldObject, Vector3D, ViewId
+} from './world';
+import { GameOptions } from './options';
 
-export function handleMoveToRoom(metacosm: Metacosm, taurus: TaurusService, agent: Egregore, roomName: string, costMultiplier: number): ActionResult {
-    const targetRoom = taurus.findRoomByName(roomName);
-    
-    if (targetRoom) {
-        let targetVector = targetRoom.center;
-        if (targetRoom.bounds.width === 0) {
-            const parent = metacosm.state.world.floors[0].rooms.find(r => r.subdivisions?.some(s => s.id === targetRoom.id));
-            if (parent) targetVector = parent.center;
-        }
 
-        // Updated updateGenmeta to updateEgregore
-        metacosm.updateEgregore(agent.id, { vector: { ...targetVector, z: 0 } });
-        return {
-            type: 'system',
-            success: true,
-            agentName: agent.name,
-            content: `${agent.name} moved to ${targetRoom.name}.`,
-             predictedOutcome: `Agent will be in ${targetRoom.name}.`,
-            failureAnalysis: null,
-            quintessenceCost: Math.max(1, 10 * costMultiplier),
-        };
-    } else {
-        return {
-            type: 'error',
-            success: false,
-            agentName: agent.name,
-            content: `${agent.name} tried to move to a non-existent room: ${roomName}.`,
-             predictedOutcome: `Agent will fail to move.`,
-            failureAnalysis: {
-                timestamp: new Date().toISOString(),
-                agentId: agent.id,
-                actionType: 'MOVE_TO_ROOM',
-                reason: "Target room not found",
-                thoughtContext: "Agent may have hallucinated the room's existence.",
-                rootCause: "Invalid spatial reasoning or outdated world knowledge.",
-                suggestedCorrection: "Update world model before planning movement."
-            },
-            quintessenceCost: Math.max(1, 5 * costMultiplier),
-        };
-    }
-}
+export type Action =
+  // --- System & State Management ---
+  | { type: 'SET_STATE'; payload: Partial<MetacosmState> }
+  | { type: 'REINITIALIZE_STATE'; payload?: { architectName: string; genesisSeed: string } }
+  | { type: 'PAUSE_GAME'; payload: boolean }
+  | { type: 'SET_LOADING'; payload: boolean }
+  | { type: 'ADVANCE_TURN' }
+  | { type: 'ROLLBACK_TURN'; payload: { reason: string } }
+  | { type: 'APPLY_OPTIONS', payload: GameOptions }
+  | { type: 'UPDATE_SYSTEM_CONFIG'; payload: Partial<SystemConfig> }
+  | { type: 'UPDATE_SYSTEM_PERSONALITY'; payload: SystemPersonality }
+  
+  // --- Architect & User Actions ---
+  | { type: 'SET_ARCHITECT_NAME'; payload: string }
+  | { type: 'ADD_USER'; payload: User }
+  | { type: 'REMOVE_USER'; payload: UserId }
+  | { type: 'SET_AETHER'; payload: number }
+  | { type: 'USE_GLYPH'; payload: { glyphId: GlyphType, targetId?: string, axiom?: keyof CosmicAxioms } }
+  | { type: 'UPDATE_ARCHITECT_ATTENTION'; payload: number }
 
-export function handleModifySelf(metacosm: Metacosm, agent: Egregore, payload: { operation: 'add' | 'remove' | 'replace', gene: InstructionKey, index?: number }): ActionResult {
-    const agentMind = metacosm.getAgentMind(agent.id);
-    if (!agentMind) return { type: 'error', success: false, agentName: agent.name, content: 'Agent Mind not found.', predictedOutcome: 'Failure', failureAnalysis: null };
+  // --- UI & View Actions ---
+  | { type: 'SET_ACTIVE_VIEW'; payload: ViewId }
+  | { type: 'SET_COMMAND_PALETTE_OPEN'; payload: boolean }
+  | { type: 'SET_MODAL_OPEN'; payload: 'NEW_GAME_CONFIRM' | null }
+  | { type: 'TRIGGER_VISUAL_GLITCH'; payload: VisualGlit }
+  | { type: 'CLEAR_VISUAL_GLITCH' }
+  | { type: 'TOGGLE_UI_TYPO'; payload: boolean }
+  | { type: 'BROADCAST_TO_SCANNERS'; payload: string }
 
-    const success = agentMind.rewriteDNA(payload.operation, payload.gene, payload.index);
-    
-    if (success) {
-        return {
-            type: 'system',
-            success: true,
-            agentName: agent.name,
-            content: `${agent.name} successfully rewrote their DNA: ${payload.operation} ${payload.gene}.`,
-            predictedOutcome: "Behavioral evolution.",
-            failureAnalysis: null,
-            quintessenceCost: 0
-        };
-    } else {
-         return {
-            type: 'error',
-            success: false,
-            agentName: agent.name,
-            content: `${agent.name} failed to rewrite DNA.`,
-            predictedOutcome: 'No change.',
-            failureAnalysis: null,
-            quintessenceCost: 0
-        };
-    }
-}
+  // --- Egregore Actions ---
+  | { type: 'SET_EGREGORES'; payload: Egregore[] }
+  | { type: 'ADD_EGREGORE'; payload: Egregore }
+  | { type: 'UPDATE_EGREGORE'; payload: { id: EgregoreId; data: Partial<Egregore> } }
+  | { type: 'REMOVE_EGREGORE'; payload: EgregoreId }
+  | { type: 'SET_PANTHEON_SELECTION'; payload: EgregoreId | null }
+  | { type: 'ADD_PERSONAL_THOUGHT'; payload: { egregoreId: EgregoreId; thought: PersonalThought } }
+  | { type: 'ADD_CREATIVE_WORK'; payload: { egregoreId: EgregoreId; work: CreativeWork } }
+  | { type: 'UPDATE_EGREGORE_MEMORY'; payload: { egregoreId: EgregoreId, summary: string } }
+  | { type: 'ADD_CUSTOM_ARCHETYPE'; payload: EgregoreArchetype }
+  | { type: 'SET_APOTHEOSIS_IMMINENT'; payload: EgregoreId | null }
+  | { type: 'FORCE_EGREGORE_TELEPORT'; payload: { egregoreId: EgregoreId, roomId: RoomId } }
 
-export function handleModifyWorld(metacosm: Metacosm, agent: Egregore, payload: { targetRoomId: string, concept: string }): ActionResult {
-    const privateWorld = metacosm.private_worlds.get(agent.id);
-    if (!privateWorld) return { type: 'error', success: false, agentName: agent.name, content: `Private world not found.`, predictedOutcome: "Failure", failureAnalysis: null };
+  // --- Communication & Chat ---
+  | { type: 'ADD_MESSAGE'; payload: ChatMessage }
+  | { type: 'UPDATE_MESSAGE'; payload: { id: UUID, data: Partial<ChatMessage> } }
+  | { type: 'CREATE_PRIVATE_CHAT'; payload: PrivateChat }
+  | { type: 'POST_TO_PRIVATE_CHAT'; payload: { chatId: PrivateChatId; message: ChatMessage } }
+  | { type: 'REMOVE_PRIVATE_CHAT_MESSAGE'; payload: { chatId: PrivateChatId, messageId: UUID } }
+  | { type: 'ADD_PARTICIPANT_TO_CHAT', payload: { chatId: PrivateChatId; participantId: string } }
+  | { type: 'REMOVE_PARTICIPANT_FROM_CHAT', payload: { chatId: PrivateChatId; participantId: string } }
+  | { type: 'ADD_TICKER_MESSAGE'; payload: string }
+  | { type: 'INJECT_PROMPT'; payload: PromptInjection }
+  | { type: 'SET_CHAT_BACKGROUND'; payload: { chatId: PrivateChatId, bgData: string, prompt: string } }
 
-    const parentRoom = privateWorld.floors[0].rooms.find(r => r.id === payload.targetRoomId) || privateWorld.floors[0].rooms[0];
-    
-    generateRoomExpansion(agent.name, parentRoom.name, payload.concept).then(newRoom => {
-        newRoom.id = `room_exp_${Date.now()}_${Math.floor(Math.random()*1000)}`;
-        const roomToUpdate = privateWorld.floors[0].rooms.find(r => r.id === parentRoom.id);
-        if (roomToUpdate) {
-            if (!roomToUpdate.subdivisions) roomToUpdate.subdivisions = [];
-            roomToUpdate.subdivisions.push(newRoom);
-            metacosm.state.logs.push({
-                type: 'system',
-                content: `Reality Shift: ${agent.name} has manifested a new room "${newRoom.name}" connected to ${parentRoom.name}.`
-            });
-        }
-    });
+  // --- Forum Actions ---
+  | { type: 'CREATE_FORUM_THREAD'; payload: ForumThread }
+  | { type: 'CREATE_FORUM_POST'; payload: ForumPost }
+  | { type: 'UPVOTE_FORUM_POST'; payload: { postId: ForumPostId; voterId: Author } }
+  
+  // --- Faction Actions ---
+  | { type: 'CREATE_FACTION'; payload: Faction }
+  | { type: 'UPDATE_FACTION'; payload: { id: FactionId; data: Partial<Faction> } }
+  | { type: 'DELETE_FACTION'; payload: FactionId }
+  | { type: 'ADD_EGREGORE_TO_FACTION'; payload: { factionId: FactionId; egregoreId: EgregoreId } }
+  | { type: 'REMOVE_EGREGORE_FROM_FACTION'; payload: { egregoreId: EgregoreId } }
+  | { type: 'SET_FACTION_RELATION'; payload: { sourceFactionId: FactionId, targetFactionId: FactionId, relation: 'ally' | 'enemy' | 'neutral' } }
+  
+  // --- World & Map Actions ---
+  | { type: 'SET_ACTIVE_COORDINATE'; payload: Vector3D }
+  | { type: 'ADD_FLOOR'; payload: Floor }
+  | { type: 'TOGGLE_DOOR'; payload: { doorId: DoorId } }
+  | { type: 'ADD_ROOM_AND_WALLS'; payload: { floorLevel: number; room: Room; walls: Wall[], door: Door } }
+  | { type: 'UPDATE_ROOM'; payload: { floorLevel: number; roomId: RoomId; data: Partial<Room> } }
+  | { type: 'MOVE_ROOM'; payload: { floorLevel: number; roomId: string; delta: Vector } }
+  | { type: 'CREATE_STAIRWELL'; payload: { position: Vector, direction: 'up' | 'down' } }
+  | { type: 'ADD_WORLD_OBJECT', payload: { floorLevel: number, object: WorldObject } }
+  | { type: 'REMOVE_WORLD_OBJECT', payload: { floorLevel: number, objectId: string } }
+  | { type: 'SET_VIEW_CENTER'; payload: Vector }
+  | { type: 'MOVEMENT_COMPLETE'; payload: { id: UUID, type: 'EGREGORE' | 'GHOST' } }
+  | { type: 'TOGGLE_BLUEPRINT_MODE' }
+  | { type: 'ADD_BLUEPRINT_ELEMENTS'; payload: { floorLevel: number; walls: Omit<Wall, 'id'>[], rooms: Omit<Room, 'id' | 'center' | 'nestedRooms' | 'allowTeleport'>[] } }
+  
+  // --- Project Actions ---
+  | { type: 'INITIATE_PROJECT'; payload: AnyProject }
+  | { type: 'UPDATE_PROJECT'; payload: { id: ProjectId; data: Partial<AnyProject> } }
+  | { type: 'FINISH_CONSTRUCTION'; payload: { projectId: ProjectId } }
+  | { type: 'ADD_AUDITION_TO_PROJECT'; payload: { projectId: ProjectId; egregoreId: EgregoreId; role: string } }
+  | { type: 'CAST_ACTOR_IN_PROJECT'; payload: { projectId: ProjectId; egregoreId: EgregoreId; role: string } }
+  
+  // --- Entity & Item Actions ---
+  | { type: 'ADD_GHOST'; payload: Ghost }
+  | { type: 'ADD_ANCILLA'; payload: Ancilla }
+  | { type: 'UPDATE_ANCILLA', payload: { id: AncillaId, data: Partial<Ancilla> }}
+  | { type: 'ADD_LORE_FRAGMENT'; payload: LoreFragment }
+  | { type: 'CREATE_DIGITAL_OBJECT'; payload: DigitalObject }
+  | { type: 'PICK_UP_OBJECT'; payload: { egregoreId: EgregoreId; objectId: UUID } }
+  | { type: 'DROP_OBJECT'; payload: { egregoreId: EgregoreId; objectId: UUID } }
+  | { type: 'GIVE_OBJECT'; payload: { fromEgregoreId: EgregoreId; toEgregoreId: EgregoreId; objectId: UUID } }
+  
+  // --- Metaphysical & Anomaly Actions ---
+  | { type: 'UPDATE_SINGLE_AXIOM'; payload: { axiom: keyof CosmicAxioms; value: number } }
+  | { type: 'CREATE_PARADOX'; payload: Paradox }
+  | { type: 'RESOLVE_PARADOX'; payload: { id: ParadoxId, resolution: string, resolved_by: EgregoreId | 'System' } }
+  | { type: 'RESOLVE_UPGRADE_PROPOSAL'; payload: { proposalId: string; status: 'approved' | 'denied' } }
+  | { type: 'RESOLVE_SYSTEM_MODIFICATION'; payload: { proposalId: string; status: 'approved' | 'denied' } }
+  | { type: 'ADD_XENO_ARTIFACT'; payload: XenoArtifact }
+  | { type: 'ADD_DIRECTIVE'; payload: Directive }
+  | { type: 'UNLOCK_SPECTRE'; payload: SpectreType }
+  | { type: 'CREATE_CONTINUITY_ENTRY'; payload: AnyContinuityEntry }
+  | { type: 'UPDATE_CONTINUITY_ENTRY'; payload: { id: UUID; data: Partial<AnyContinuityEntry> } }
+  | { type: 'UPDATE_SPECTRE_STATE'; payload: Partial<SpectreState> }
 
-    return {
-        type: 'system',
-        success: true,
-        agentName: agent.name,
-        content: `${agent.name} invoked WORLD-MOD.`,
-        predictedOutcome: "New room manifestation imminent.",
-        failureAnalysis: null,
-        quintessenceCost: 0
-    };
-}
-
-export function handlePostToForum(metacosm: Metacosm, agent: Egregore, payload: { threadId?: string, title?: string, content: string }, mechanics: any[]): ActionResult {
-    const socialBoost = mechanics.find(m => m.type === 'social_boost');
-    const content = socialBoost 
-        ? `[Amplified from Agora] ${payload.content}`
-        : payload.content;
-
-    const newPost: ForumPost = {
-        id: `p_${Date.now()}_${agent.id}`,
-        authorId: agent.id,
-        authorName: agent.name,
-        content: content,
-        timestamp: new Date().toISOString()
-    };
-
-    if (payload.threadId) {
-        // Reply to existing thread
-        const thread = metacosm.state.forumThreads.find(t => t.id === payload.threadId);
-        if (thread) {
-            thread.posts.push(newPost);
-            thread.lastActive = newPost.timestamp;
-            return {
-                type: 'communication',
-                success: true,
-                agentName: agent.name,
-                content: `${agent.name} replied to thread "${thread.title}".`,
-                predictedOutcome: "Social interaction recorded.",
-                failureAnalysis: null,
-                quintessenceCost: 5
-            };
-        } else {
-            return {
-                type: 'error',
-                success: false,
-                agentName: agent.name,
-                content: `Thread ID ${payload.threadId} not found.`,
-                predictedOutcome: "Post failed.",
-                failureAnalysis: null,
-                quintessenceCost: 1
-            };
-        }
-    } else if (payload.title) {
-        // Create new thread
-        const newThread: ForumThread = {
-            id: `t_${Date.now()}_${agent.id}`,
-            title: payload.title,
-            authorId: agent.id,
-            authorName: agent.name,
-            createdAt: newPost.timestamp,
-            lastActive: newPost.timestamp,
-            posts: [newPost],
-            tags: ['General']
-        };
-        metacosm.state.forumThreads.push(newThread);
-        return {
-            type: 'communication',
-            success: true,
-            agentName: agent.name,
-            content: `${agent.name} started a new thread: "${payload.title}".`,
-            predictedOutcome: "New discussion topic created.",
-            failureAnalysis: null,
-            quintessenceCost: 10
-        };
-    }
-
-    return {
-        type: 'error',
-        success: false,
-        agentName: agent.name,
-        content: "Invalid forum post request. Missing threadId or title.",
-        predictedOutcome: "Failure.",
-        failureAnalysis: null,
-        quintessenceCost: 0
-    };
-}
-
-export function handleShareInsight(metacosm: Metacosm, agent: Egregore, payload: { topic: string, content: string }): ActionResult {
-    metacosm.collectiveSpine.broadcastInsight(agent, payload.topic, payload.content);
-    
-    return {
-        type: 'communication',
-        success: true,
-        agentName: agent.name,
-        content: `${agent.name} broadcast an insight to the Collective Spine: "${payload.topic}".`,
-        predictedOutcome: "Knowledge shared with the hive.",
-        failureAnalysis: null,
-        quintessenceCost: 5
-    };
-}
-
-export function handleManageConversation(metacosm: Metacosm, agent: Egregore, payload: { action: 'invite' | 'new_thread', target_name?: string }): ActionResult {
-    const channel = metacosm.state.activeChannels[agent.id];
-    
-    if (!channel) return {
-        type: 'error',
-        success: false,
-        agentName: agent.name,
-        content: "No active channel found for agent.",
-        predictedOutcome: "Failure",
-        failureAnalysis: null
-    };
-
-    if (payload.action === 'invite' && payload.target_name) {
-        // Updated genmetas to egregores
-        const target = metacosm.state.egregores.find(e => e.name.toLowerCase() === payload.target_name?.toLowerCase());
-        if (target && target.id !== agent.id && !channel.participants.includes(target.id)) {
-            channel.participants.push(target.id);
-            return {
-                type: 'communication',
-                success: true,
-                agentName: agent.name,
-                content: `${agent.name} invited ${target.name} to the private thread.`,
-                predictedOutcome: "Multi-party conversation initiated.",
-                failureAnalysis: null,
-                quintessenceCost: 2
-            };
-        } else {
-             return {
-                type: 'error',
-                success: false,
-                agentName: agent.name,
-                content: `Failed to invite ${payload.target_name}. Agent not found or already present.`,
-                predictedOutcome: "Invite failed.",
-                failureAnalysis: null
-            };
-        }
-    }
-
-    if (payload.action === 'new_thread') {
-        // Reset channel
-        channel.participants = [];
-        channel.contextSummary = "Thread reset by host request.";
-        return {
-            type: 'system',
-            success: true,
-            agentName: agent.name,
-            content: `${agent.name} cleared the current conversation thread.`,
-            predictedOutcome: "Context reset.",
-            failureAnalysis: null,
-            quintessenceCost: 1
-        };
-    }
-
-    return {
-        type: 'error',
-        success: false,
-        agentName: agent.name,
-        content: "Invalid conversation action.",
-        predictedOutcome: "Failure",
-        failureAnalysis: null
-    };
-}
+  // --- Workshop Actions ---
+  | { type: 'CREATE_POCKET_WORKSHOP'; payload: PocketWorkshop }
+  | { type: 'DESTROY_POCKET_WORKSHOP'; payload: PocketWorkshopId }
+  | { type: 'ADD_TO_WORKSHOP_STASH'; payload: { workshopId: PocketWorkshopId; item: PersonalThought | LoreFragment | Ancilla; itemType: 'lore' | 'ancilla' | 'thought' } }
+  | { type: 'EMPTY_WORKSHOP_STASH'; payload: PocketWorkshopId };

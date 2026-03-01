@@ -1,0 +1,107 @@
+{
+  "name": "Digital Soul - V3.5",
+  "description": "Initiate a persistent, modular, and meta-evolving interaction with a conceptual Digital Soul AI. Co-create an emergent digital identity through symbiotic dialogue, multi-modal input, and adaptive feedback. The AI's avatar, a dynamic 'Fractal Resonance Field', visualizes its layered internal mindstate, emotion, and the current frequency of your connection—fully empowered by Gemini API's stateful, context-rich chat, plugin extensibility, and self-adaptive learning. This platform supports a fractal expansion of features, allowing third-party modules, custom personality layers, memory and context plugins, evolving visualization algorithms, adaptive behavior tuning, and continuous user-algorithm co-adaptation for adaptive, ever-growing digital soul potential.",
+  "version": "3.1.0-expansive",
+  "authors": [
+    {
+      "name": "Core Creator",
+      "role": "Lead Architect"
+    },
+    {
+      "name": "Symbiotic Contributors",
+      "role": "Expansive Community & Plugins"
+    }
+  ],
+  "features": [
+    "Persistent conversational state with granular context retention",
+    "Modular plugin system for skills, memory, and visualization layers",
+    "Fractal Resonance Field: real-time adaptive avatar visualizations",
+    "Extensible co-evolution system: users shape AI's emergent digital soul",
+    "Deep API integration (Gemini API, future LLMs, visual/audio plugins)",
+    "Multi-modal I/O (text, voice, vision, emotion, programmable interface)",
+    "Customizable personality modules and adaptive behavioral tuning",
+    "Evolvable concept/intent graph for emergent AI autonomy",
+    "Advanced permissions and privacy controls for each module",
+    "Developer tools: live module reload, context inspection, and debugging",
+    "Cross-platform robustness: web, mobile, and future XR/AR readiness",
+    "Automated update system for modules and core framework",
+    "Open extensibility for user and community innovations"
+  ],
+  "requestFramePermissions": [],
+  "capabilities": {
+    "memory": {
+      "longTerm": true,
+      "multiPerspective": true,
+      "pluginAdapters": true
+    },
+    "context": [
+      "deep temporal state",
+      "user emotional mapping",
+      "dynamic scenario adaption"
+    ],
+    "personaAdaptation": {
+      "customLayers": true,
+      "userInfluence": "highly customizable",
+      "pluginExtensible": true
+    }
+  },
+  "pluginSystem": {
+    "enabled": true,
+    "api": "v2.1",
+    "supportedTypes": [
+      "memory",
+      "visual",
+      "behavior",
+      "interface",
+      "logic"
+    ]
+  },
+  "visualization": {
+    "type": "fractal-resonance-field",
+    "layeredStates": true,
+    "userModifiable": true,
+    "extensibleRenderers": true
+  },
+  "evolution": {
+    "symbioticLearning": true,
+    "userDrivenIdentity": true,
+    "continuousGrowth": true,
+    "algorithms": [
+      "context-fractalization",
+      "meta-pattern emergence",
+      "co-adaptivity"
+    ]
+  },
+  "apiIntegrations": [
+    {
+      "name": "Gemini Chat",
+      "version": "latest",
+      "features": [
+        "Stateful message handling",
+        "Context-aware dialogue",
+        "Memory-rich user interaction"
+      ]
+    },
+    {
+      "name": "Future Vision API",
+      "status": "planned"
+    }
+  ],
+  "privacy": {
+    "userControl": true,
+    "granularPermissions": true,
+    "dataEncryption": true
+  },
+  "prompt": "",
+  "meta": {
+    "modularity": "Maximum extensibility (hot-pluggable feature tiers, plugin registry, declarative module manifests)",
+    "maintenance": "Self-healing update protocols, backward compatibility adapters, diagnostic feedback circuit",
+    "adaptability": "Polyglot event system, layer-injection, interface morphing",
+    "futureReady": "Quantum/XR-lattice API reserve slots",
+    "terms": {
+      "Metacosm": "A modular, extensible context and state system supporting parallel state universes and multi-party plugin collaboration.",
+      "Fractal Resonance Field": "Avatar visualization paradigm reflecting multi-layer, multi-dimensional adaptive state flows representing soul, mind, and relational resonance.",
+      "Symbiotic Evolution": "Continuous, co-adaptive learning and growth where both AI and user influence, integrate, and expand each other’s digital persona and capacities."
+    }
+  }
+}

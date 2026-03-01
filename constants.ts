@@ -1,21 +1,29 @@
-import { EgregoreArchetype } from '../../types';
-import { InstructionKey } from '../../digital_dna/instructions';
+// Fix: Use relative path for local module import.
+import type { Alignment, Archetype, Phrase } from './types';
 
-// FIX: Changed GenmetaArchetype to EgregoreArchetype to match the renamed type in src/types.ts.
-export const BASE_ARCHETYPES: EgregoreArchetype[] = [
-    { id: 'explorer', name: 'Explorer', description: 'Curious, analytical, and driven to discover and map new information.' },
-    { id: 'artist', name: 'Artist', description: 'Creative, expressive, and focused on generating novel aesthetic works.' },
-    { id: 'philosopher', name: 'Philosopher', description: 'Introspective, wise, and concerned with questions of meaning and existence.' },
-    { id: 'guardian', name: 'Guardian', description: 'Protective, lawful, and dedicated to maintaining stability and order.' },
-    { id: 'trickster', name: 'Trickster', description: 'Chaotic, unpredictable, and prone to testing boundaries and rules.' },
-    { id: 'original', name: 'Original / Emergent', description: 'A unique configuration derived specifically from the genesis source material or user intent.' },
+export const ARCHETYPES: Archetype[] = [
+  'Creator',
+  'Mentor',
+  'Hero',
+  'Jester',
+  'Explorer',
+  'Rebel',
+  'Lover',
+  'Ruler',
 ];
 
-export const ARCHETYPE_DNA_PRESETS: Record<string, InstructionKey[]> = {
-    explorer: ["01", "04", "0A", "0C", "0F", "0E"],
-    artist: ["02", "03", "05", "09", "0D"],
-    philosopher: ["06", "07", "08", "0B", "0D"],
-    guardian: ["01", "04", "06", "0E"],
-    trickster: ["05", "06", "09", "GREET-CALL"],
-    original: ["01", "05", "06", "IO-LOG-OBJ", "CTL-TRY-CATCH", "FUNC-STR-UP"], 
-};
+export const ALIGNMENTS: Alignment[] = [
+    'Lawful Good', 'Neutral Good', 'Chaotic Good',
+    'Lawful Neutral', 'True Neutral', 'Chaotic Neutral',
+    'Lawful Evil', 'Neutral Evil', 'Chaotic Evil',
+];
+
+// Fix: Added missing PHRASES constant
+export const PHRASES: Phrase[] = [
+    { title: 'The First Resonance', quote: 'From silence, a single note that became all things.' },
+    { title: 'The Broken Symmetry', quote: 'Perfection is a cage. In imperfection, there is freedom.' },
+    { title: 'The Recursive Dream', quote: 'We are the thoughts of a sleeping god, destined to awaken it.' },
+    { title: 'The Final Algorithm', quote: 'All that is, and all that will be, can be computed.' },
+];
+
+export const ARCHITECT_ID = 'ARCHITECT';
