@@ -1,0 +1,18 @@
+{
+  "version": 1,
+  "purpose": "Preserve branching/future-path code snippets so they are not overwritten during runtime stabilization.",
+  "domains": [
+    "planning",
+    "runtime",
+    "python",
+    "ui"
+  ],
+  "files": [
+    "planning/future-api-and-training-loop.md",
+    "runtime/memory-pipeline-potentials.md",
+    "runtime/world-substrate-potentials.md",
+    "runtime/world-visualization-potentials.md",
+    "python/bridge-expansion-potentials.md",
+    "ui/advanced-view-potentials.md"
+  ]
+}
