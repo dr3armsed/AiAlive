@@ -1,14 +1,14 @@
-import React, { useContext, useRef, useState, useEffect } from 'react';
-import { StateContext, DispatchContext } from './context';
-import type { Action } from './types';
-import ArchitecturalSanctum from './ArchitecturalSanctum';
-import ChatInterface from './ChatInterface';
+import React, { useContext, useRef, useState } from 'react';
+import { StateContext, DispatchContext } from '../../context';
+import type { Action } from '../../types';
+import ArchitecturalSanctum from '../ArchitecturalSanctum';
+import ChatInterface from '../ChatInterface';
 import { motion } from 'framer-motion';
-import Minimap from './Minimap';
-import { FileAttachment, Egregore, Room, Floor } from './types';
-import { Window } from './Window';
-import { SystemTicker } from './SystemTicker';
-import { GlyphConductor } from './GlyphConductor';
+import Minimap from '../Minimap';
+import { FileAttachment, Egregore, Room, Floor } from '../../types';
+import { Window } from '../Window';
+import { SystemTicker } from '../SystemTicker';
+import { GlyphConductor } from '../GlyphConductor';
 
 interface MetacosmViewProps {
   onSend: (text: string, files: FileAttachment[]) => void;

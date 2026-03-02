@@ -1,9 +1,9 @@
 import React, { useContext, useMemo, useState } from 'react';
-import { StateContext } from './context';
-import { THEMES } from './constants';
+import { StateContext } from '../../context';
+import { THEMES } from '../../constants';
 import { motion, AnimatePresence } from 'framer-motion';
-import { generateTomeFromLore } from './services/geminiService';
-import { TomeOptions } from './types';
+import { generateTomeFromLore } from '../../services/geminiService';
+import { TomeOptions } from '../../types';
 
 
 const WorldForge: React.FC = () => {

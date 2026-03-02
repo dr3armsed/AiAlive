@@ -1,10 +1,11 @@
 
 
+
 import React from 'react';
 import { useState } from '../../packages/react-chimera-renderer/index.ts';
 import { motion } from 'framer-motion';
 import type { DigitalSoul } from '../../types/index.ts';
-import PaperAirplaneIcon from '../../icons/PaperAirplaneIcon.tsx';
+import PaperAirplaneIcon from '../icons/PaperAirplaneIcon.tsx';
 
 const MotionButton = motion.button as any;
 

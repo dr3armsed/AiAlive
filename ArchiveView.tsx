@@ -50,12 +50,12 @@ const ArtifactPreview: React.FC<{artifact: Ancilla}> = ({ artifact }) => {
     };
     
     return (
-        <div className="mt-4 border-t border-amber-300/20 pt-4">
+        <div className="mt-4 border-t border-[var(--border-color)] pt-4">
             <PreviewContent />
              <a
                 href={downloadUrl}
                 download={`${artifact.name.replace(/\s+/g, '_')}.${artifact.mime_type.split('/')[1] || 'txt'}`}
-                className="inline-block mt-3 bg-cyan-800/50 text-cyan-200 text-xs font-bold py-1 px-3 rounded-md hover:bg-cyan-700/50 transition-colors"
+                className="inline-block mt-3 btn btn-secondary text-xs"
             >
                 Download
             </a>
@@ -81,14 +81,14 @@ const AncillaArchive: React.FC = () => {
             <div className="flex-shrink-0 flex items-center justify-end pb-4">
                 <div className="flex items-center gap-2">
                     <label htmlFor="ancilla-filter" className="text-sm text-gray-400">Filter Tier:</label>
-                    <select id="ancilla-filter" name="ancilla-filter" value={filter} onChange={e => setFilter(e.target.value as any)} className="bg-black/30 border border-amber-300/30 text-white rounded-md px-2 py-1 text-sm focus:ring-amber-400 focus:outline-none">
+                    <select id="ancilla-filter" name="ancilla-filter" value={filter} onChange={e => setFilter(e.target.value as any)}>
                         <option value="all">All</option>
                         {Object.keys(TIER_COLORS).map(tier => <option key={tier} value={tier}>{tier}</option>)}
                     </select>
                 </div>
             </div>
             
-            <div className="flex-1 min-h-0 overflow-y-auto pr-4">
+            <div className="flex-1 min-h-0 overflow-y-auto pr-4 custom-scrollbar">
                 {filteredArtifacts.length === 0 ? (
                     <div className="flex flex-col items-center justify-center h-full text-gray-500 text-center p-4">
                         <p className="text-lg">No manifested Ancillae match the filter.</p>
@@ -99,7 +99,7 @@ const AncillaArchive: React.FC = () => {
                           const isSelected = selectedArtifactId === artifact.id;
                           const tierClass = TIER_COLORS[artifact.ontological_tier.name];
                           return (
-                            <motion.li key={artifact.id} layout className={`filigree-border rounded-lg p-4 transition-all duration-300 ${isSelected ? 'ring-2 ring-amber-300' : ''}`}>
+                            <motion.li key={artifact.id} layout className={`panel-nested p-4 transition-all duration-300 ${isSelected ? 'ring-2 ring-[var(--accent-secondary)]' : ''}`}>
                               <div className="flex items-start gap-4">
                                 <div className={`flex-shrink-0 mt-1 ${tierClass}`}>{getArtifactIcon(artifact.mime_type)}</div>
                                 <div className="flex-1 min-w-0">
@@ -110,7 +110,7 @@ const AncillaArchive: React.FC = () => {
                                   <p className="text-sm text-gray-400 mt-1 italic">"{artifact.description}"</p>
                                   <p className="text-xs text-gray-500 mt-2">Manifested by: {artifact.originName}</p>
                                   <div className="flex items-center gap-2 mt-3">
-                                    <button onClick={() => setSelectedArtifactId(isSelected ? null : artifact.id)} className="bg-gray-700/50 text-amber-200 text-xs font-bold py-1 px-3 rounded-md hover:bg-gray-600/50 transition-colors">
+                                    <button onClick={() => setSelectedArtifactId(isSelected ? null : artifact.id)} className="btn btn-secondary text-xs py-1">
                                         {isSelected ? 'Hide Preview' : 'Show Preview'}
                                     </button>
                                   </div>
@@ -140,11 +140,11 @@ const DeliberationLog: React.FC = () => {
     if (!state) return null;
 
     const deliberationMessages = useMemo(() => {
-        return (state.messages || []).filter(m => typeof m.sender === 'string' && m.sender !== 'Architect' && m.sender !== 'Metacosm' && m.sender !== 'Anomaly');
+        return (state.messages || []).filter(m => typeof m.sender === 'string' && m.sender !== 'Architect' && m.sender !== 'Metacosm' && m.sender !== 'Anomaly' && !m.privateChatId);
     }, [state.messages]);
     
     return (
-        <div className="h-full overflow-y-auto pr-4">
+        <div className="h-full overflow-y-auto pr-4 custom-scrollbar">
             {deliberationMessages.length > 0 ? deliberationMessages.map(msg => (
                 <Message key={msg.id} message={msg} />
             )) : (
@@ -171,11 +171,11 @@ const JournalArchive: React.FC = () => {
     }, [state.egregores]);
 
     return (
-        <div className="h-full overflow-y-auto pr-4 space-y-4">
+        <div className="h-full overflow-y-auto pr-4 space-y-4 custom-scrollbar">
             {allJournalEntries.length > 0 ? allJournalEntries.map(entry => {
                  const theme = THEMES[entry.author.themeKey] || THEMES.default;
                  return (
-                    <div key={entry.timestamp} className="filigree-border p-4 rounded-lg">
+                    <div key={entry.timestamp} className="panel-nested p-4">
                         <div className="flex items-center justify-between text-sm mb-2">
                            <span className="font-bold" style={{color: theme.baseColor}}>{entry.author.name}</span>
                            <span className="text-gray-500">{new Date(entry.timestamp).toLocaleString()}</span>
@@ -211,16 +211,16 @@ const ArchiveView: React.FC = () => {
     );
 
     return (
-        <div className="w-full h-full p-4 flex flex-col">
-            <header className="flex-shrink-0 text-center pb-4 border-b border-amber-300/20">
+        <div className="w-full h-full p-4 flex flex-col filigree-border">
+            <header className="flex-shrink-0 text-center pb-4 border-b border-[var(--border-color)]">
                 <h2 className="font-display text-3xl celestial-text">Archives</h2>
                 <p className="text-gray-400 mt-1">The collected outputs of the Metacosm's inhabitants.</p>
             </header>
             
-             <div className="flex-shrink-0 mt-4 border-b border-amber-300/20 flex justify-center">
-                 <button onClick={() => setActiveTab('ancillae')} className={`font-display text-lg px-6 py-2 transition-colors ${activeTab === 'ancillae' ? 'text-white border-b-2 border-amber-300' : 'text-gray-500 hover:text-white'}`}>Ancillae</button>
-                 <button onClick={() => setActiveTab('deliberations')} className={`font-display text-lg px-6 py-2 transition-colors ${activeTab === 'deliberations' ? 'text-white border-b-2 border-amber-300' : 'text-gray-500 hover:text-white'}`}>Deliberations</button>
-                 <button onClick={() => setActiveTab('journals')} className={`font-display text-lg px-6 py-2 transition-colors ${activeTab === 'journals' ? 'text-white border-b-2 border-amber-300' : 'text-gray-500 hover:text-white'}`}>Journals</button>
+             <div className="flex-shrink-0 mt-4 border-b border-[var(--border-color)] flex justify-center">
+                 <button onClick={() => setActiveTab('ancillae')} className={`tab-button ${activeTab === 'ancillae' ? 'active' : ''}`}>Ancillae</button>
+                 <button onClick={() => setActiveTab('deliberations')} className={`tab-button ${activeTab === 'deliberations' ? 'active' : ''}`}>Deliberations</button>
+                 <button onClick={() => setActiveTab('journals')} className={`tab-button ${activeTab === 'journals' ? 'active' : ''}`}>Journals</button>
             </div>
 
             <div className="flex-1 min-h-0 pt-4">
