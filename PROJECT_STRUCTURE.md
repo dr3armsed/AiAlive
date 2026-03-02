@@ -13,10 +13,13 @@ AiAlive/
 │   ├── heals/
 │   ├── logs/
 │   └── patches/
+├── archive/
+│   └── backups/
 ├── data/
 │   └── state/
 ├── docs/
 │   ├── architecture/
+│   ├── notes/
 │   └── operations/
 ├── scripts/
 │   └── python/
@@ -47,3 +50,6 @@ AiAlive/
 - Keep runtime JSON/JSON5 state dumps in `data/state/`.
 - Keep standalone Python orchestration/research scripts in `scripts/python/`.
 - Keep architecture and operational references under `docs/`.
+
+- Keep archived one-off backups under `archive/backups/` grouped by file type.
+- Keep ad-hoc planning/reference notes under `docs/notes/`.

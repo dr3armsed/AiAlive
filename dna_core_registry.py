@@ -35,6 +35,18 @@ from typing import Dict, Optional, List, Any, Union, Callable
 from behind_the_scenes.digitaldna.digitaldna.dna_evolution.dna_evo_core.dna_core_validation import validate_instruction as external_validate_instruction
 from behind_the_scenes.digitaldna.digitaldna.dna_evolution.instructions import EvolutionPatchLog
 
+
+
+def create_core_logger(name: str) -> logging.Logger:
+    logger = logging.getLogger(name)
+    if not logger.handlers:
+        handler = logging.StreamHandler()
+        formatter = logging.Formatter('[%(levelname)s][%(asctime)s][%(name)s] %(message)s')
+        handler.setFormatter(formatter)
+        logger.addHandler(handler)
+        logger.setLevel(logging.INFO)
+    return logger
+
 # ================ ADVANCED GLOSSARY (2040-Ready) ================
 TERMS_2040: Dict[str, str] = {
     "UltraInstructionSet": "A secure, distributed, self-updating and patchable set of atomic AGI opcodes and microprograms (2025+). By 2035, supports federated learning and quantum execution.",

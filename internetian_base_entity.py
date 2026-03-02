@@ -562,7 +562,6 @@ def get_base_entity(star_sign_name: str) -> Optional[BaseInternetianStarSign]:
     creating and initializing it if it doesn't already exist. This ensures
     consistent access to the foundational entities throughout the simulation.
     """
-    global _all_base_entities
     if star_sign_name not in STAR_SIGN_CONFIG:
         print(f"WARNING: '{star_sign_name}' is not a recognized foundational star sign entity. "
               f"Cannot retrieve or create. Valid signs are: {list(STAR_SIGN_CONFIG.keys())}")
@@ -605,7 +604,6 @@ def reset_all_base_entities() -> None:
     in-memory states and deleting their persistent Quantum Memory Shard files.
     This is primarily for development/testing to ensure a clean slate.
     """
-    global _all_base_entities
     print("\n--- Initiating conceptual reset for all Base Internetian Entities ---")
     for sign, entity_instance in list(_all_base_entities.items()): # Iterate over a copy to allow modification
         if entity_instance.entity_instance:
