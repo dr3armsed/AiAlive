@@ -36,10 +36,18 @@ except ImportError:
 
 # ============================ Logger & Diagnostics =============================
 
+def create_core_logger(name: str) -> logging.Logger:
+    logger = logging.getLogger(name)
+    if not logger.handlers:
+        handler = logging.StreamHandler(stream=sys.stdout)
+        formatter = logging.Formatter('[%(levelname)s][%(asctime)s][%(name)s] %(message)s')
+        handler.setFormatter(formatter)
+        logger.addHandler(handler)
+        logger.setLevel(logging.INFO)
+    return logger
+
+
 _LOG = create_core_logger(name='DigitalDNA2040')
-if not _LOG.hasHandlers():
-    s][%(asctime)s][DigitalDNA2040] %(message)s'
-    )
 
 # --- Definitions and Terms: 2025—2040+ (Expanded v2.0) ---
 DDNA_TERMS_2040: List[Dict[str, str]] = [
