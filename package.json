@@ -27,7 +27,8 @@
     "test:substrate": "ts-node --compiler-options '{\"module\":\"commonjs\"}' --transpile-only test/runtimeWorldSubstrate.test.ts",
     "test:memory-pipeline": "ts-node --compiler-options '{\"module\":\"commonjs\"}' --transpile-only test/runtimeMemoryPipeline.test.ts",
     "test:world-access": "ts-node --compiler-options '{\"module\":\"commonjs\"}' --transpile-only test/runtimeWorldAccess.test.ts",
-    "test:world-visualization": "ts-node --compiler-options '{\"module\":\"commonjs\"}' --transpile-only test/runtimeWorldVisualization.test.ts"
+    "test:world-visualization": "ts-node --compiler-options '{\"module\":\"commonjs\"}' --transpile-only test/runtimeWorldVisualization.test.ts",
+    "merge:split-plan": "node tools/git/plan-split-merge.mjs"
   },
   "keywords": [
     "ai",
