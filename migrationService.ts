@@ -45,10 +45,13 @@ const migrators: Record<number, (state: any) => any> = {
         if (!state.system_config) {
             state.system_config = {};
         }
-        if (typeof state.system_config.systemLocusEfficiencyTrendThreshold === 'undefined') {
+        const isValidThreshold = (value: unknown): value is number =>
+            typeof value === 'number' && !Number.isNaN(value) && value >= 0.01 && value <= 1;
+
+        if (!isValidThreshold(state.system_config.systemLocusEfficiencyTrendThreshold)) {
             state.system_config.systemLocusEfficiencyTrendThreshold = 0.2;
         }
-        if (typeof state.system_config.systemLocusAwarenessTrendThreshold === 'undefined') {
+        if (!isValidThreshold(state.system_config.systemLocusAwarenessTrendThreshold)) {
             state.system_config.systemLocusAwarenessTrendThreshold = 0.05;
         }
 

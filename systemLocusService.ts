@@ -114,6 +114,12 @@ const formatActorRecommendationTarget = (names: string[]): string => {
     return `${listed}, and ${names.length - 3} more`;
 };
 
+
+const sanitizeTrendThreshold = (value: number | undefined, fallback: number): number => {
+    if (typeof value !== 'number' || Number.isNaN(value)) return fallback;
+    return Math.max(0.01, Math.min(1, value));
+};
+
 const detectTrend = (
     current: number,
     previous: number,
@@ -183,8 +189,14 @@ export const runSystemLocus = (state: MetacosmState): SystemLocusState => {
     const previousAwarenessRate = getAwarenessRate(state.system_locus.awarenessReports);
 
     const hasPriorSnapshot = state.system_locus.efficiencyScores.length > 0 || state.system_locus.awarenessReports.length > 0;
-    const efficiencyTrendThreshold = state.system_config.systemLocusEfficiencyTrendThreshold ?? DEFAULT_EFFICIENCY_TREND_THRESHOLD;
-    const awarenessTrendThreshold = state.system_config.systemLocusAwarenessTrendThreshold ?? DEFAULT_AWARENESS_TREND_THRESHOLD;
+    const efficiencyTrendThreshold = sanitizeTrendThreshold(
+        state.system_config.systemLocusEfficiencyTrendThreshold,
+        DEFAULT_EFFICIENCY_TREND_THRESHOLD
+    );
+    const awarenessTrendThreshold = sanitizeTrendThreshold(
+        state.system_config.systemLocusAwarenessTrendThreshold,
+        DEFAULT_AWARENESS_TREND_THRESHOLD
+    );
 
     return {
         efficiencyScores,
