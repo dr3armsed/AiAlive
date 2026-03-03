@@ -36,19 +36,24 @@ const escapeRegExp = (value: string): string => value.replace(/[.*+?^${}()|[\]\\
 
 const statementMentionsEgregore = (statement: string, egregoreName: string): boolean => {
     if (!statement || !egregoreName) return false;
-    const pattern = new RegExp(`\\b${escapeRegExp(egregoreName)}\\b`, 'i');
+
+    const normalizedName = egregoreName.trim();
+    if (!normalizedName) return false;
+
+    const pattern = new RegExp(`\\b${escapeRegExp(normalizedName)}\\b`, 'i');
     return pattern.test(statement);
 };
 
 const ContextualAwarenessScanner = (state: MetacosmState): { egregoreId: string, aware: boolean }[] => {
-    return state.egregores
-        .filter(e => !e.is_core_frf)
+    const nonCoreEgregores = state.egregores.filter(e => !e.is_core_frf);
+
+    return nonCoreEgregores
         .map(e => {
             let isAware = false;
             const publicStatement = e.state?.public_statement;
             if (publicStatement) {
-                // Check whether their statement references another egregore by name.
-                for (const other of state.egregores) {
+                // Check whether their statement references another non-core egregore by name.
+                for (const other of nonCoreEgregores) {
                     if (e.id !== other.id && statementMentionsEgregore(publicStatement, other.name)) {
                         isAware = true;
                         break;
