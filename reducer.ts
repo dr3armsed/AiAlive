@@ -229,6 +229,16 @@ export const getInitialState = (params?: InitialStateParams): MetacosmState => {
         efficiencyScores: [],
         awarenessReports: [],
         emergentThemes: [],
+        trendSummary: {
+            efficiency: 'stable',
+            awareness: 'stable',
+        },
+        currentMetrics: {
+            averageEfficiency: 0,
+            awarenessRate: 0,
+            lowEfficiencyCount: 0,
+        },
+        interventionRecommendations: [],
       },
     };
 };

@@ -15,6 +15,14 @@ const SystemLocusView = () => {
 
     const getEgregoreById = (id: string) => egregores.find(e => e.id === id);
 
+    const getTrendTone = (trend: 'improving' | 'stable' | 'declining') => {
+        if (trend === 'improving') return 'text-green-300';
+        if (trend === 'declining') return 'text-red-300';
+        return 'text-gray-300';
+    };
+
+    const formatTrend = (trend: 'improving' | 'stable' | 'declining') => trend.charAt(0).toUpperCase() + trend.slice(1);
+
     return (
         <div className="w-full h-full p-6 flex flex-col relative overflow-y-auto">
             <button onClick={handleClose} className="absolute top-6 right-6 p-2 text-gray-500 hover:text-white hover:bg-white/10 rounded-full transition-colors z-20" aria-label="Return to Sanctum">
@@ -86,6 +94,48 @@ const SystemLocusView = () => {
                     ) : <p className="text-sm text-gray-500">No strong themes have emerged.</p>}
                 </motion.div>
             </div>
+
+
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }} className="mt-6 filigree-border p-4 space-y-4">
+                <h2 className="text-xl font-display text-metacosm-accent">Core Trend Summary</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div className="p-3 bg-black/20 rounded-md">
+                        <p className="text-xs uppercase tracking-wide text-gray-400">Efficiency Trajectory</p>
+                        <p className={`text-lg font-semibold ${getTrendTone(system_locus.trendSummary.efficiency)}`}>{formatTrend(system_locus.trendSummary.efficiency)}</p>
+                    </div>
+                    <div className="p-3 bg-black/20 rounded-md">
+                        <p className="text-xs uppercase tracking-wide text-gray-400">Awareness Trajectory</p>
+                        <p className={`text-lg font-semibold ${getTrendTone(system_locus.trendSummary.awareness)}`}>{formatTrend(system_locus.trendSummary.awareness)}</p>
+                    </div>
+                </div>
+
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    <div className="p-3 bg-black/20 rounded-md">
+                        <p className="text-xs uppercase tracking-wide text-gray-400">Avg Efficiency</p>
+                        <p className="text-lg font-semibold text-gray-100">{system_locus.currentMetrics.averageEfficiency.toFixed(2)} / 10</p>
+                    </div>
+                    <div className="p-3 bg-black/20 rounded-md">
+                        <p className="text-xs uppercase tracking-wide text-gray-400">Awareness Rate</p>
+                        <p className="text-lg font-semibold text-gray-100">{Math.round(system_locus.currentMetrics.awarenessRate * 100)}%</p>
+                    </div>
+                    <div className="p-3 bg-black/20 rounded-md">
+                        <p className="text-xs uppercase tracking-wide text-gray-400">Low-Efficiency Actors</p>
+                        <p className="text-lg font-semibold text-gray-100">{system_locus.currentMetrics.lowEfficiencyCount}</p>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 className="text-sm font-bold text-gray-200 mb-2">Intervention Recommendations</h3>
+                    <ul className="space-y-2">
+                        {system_locus.interventionRecommendations.map((recommendation) => (
+                            <li key={recommendation} className="text-sm bg-black/20 rounded-md p-2 text-gray-300">
+                                {recommendation}
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+            </motion.div>
         </div>
     );
 };
