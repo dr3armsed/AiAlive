@@ -4,7 +4,7 @@ import { defaultOptions } from "./optionsService";
 
 // The current version of the application's state structure.
 // This should be incremented whenever a breaking change is made to the state.
-export const CURRENT_VERSION = 14;
+export const CURRENT_VERSION = 15;
 
 /**
  * A record of migration functions. Each key represents the version
@@ -36,8 +36,26 @@ const migrators: Record<number, (state: any) => any> = {
         if (typeof state.system_config.disableResetOnLoadFailure === 'undefined') {
             state.system_config.disableResetOnLoadFailure = false;
         }
-        
+
         state.version = 14;
+        return state;
+    },
+    14: (state) => {
+        console.log("Migrating state from v14 to v15...");
+        if (!state.system_config) {
+            state.system_config = {};
+        }
+        const isValidThreshold = (value: unknown): value is number =>
+            typeof value === 'number' && !Number.isNaN(value) && value >= 0.01 && value <= 1;
+
+        if (!isValidThreshold(state.system_config.systemLocusEfficiencyTrendThreshold)) {
+            state.system_config.systemLocusEfficiencyTrendThreshold = 0.2;
+        }
+        if (!isValidThreshold(state.system_config.systemLocusAwarenessTrendThreshold)) {
+            state.system_config.systemLocusAwarenessTrendThreshold = 0.05;
+        }
+
+        state.version = 15;
         return state;
     }
     // Add more migrators here as the application evolves.
