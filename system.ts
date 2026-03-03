@@ -41,6 +41,8 @@ export interface SystemConfig {
     disableResetOnLoadFailure: boolean;
     protectEgregoresOnRollback: boolean;
     protectWorksOnRollback: boolean;
+    systemLocusEfficiencyTrendThreshold?: number;
+    systemLocusAwarenessTrendThreshold?: number;
     genesisSeed?: string;
 }
 export interface SystemReportItem { id: string; title: string; details: string; suggestion: string; severity: ReportSeverity; }

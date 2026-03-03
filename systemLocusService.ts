@@ -103,8 +103,8 @@ const getAwarenessRate = (awarenessReports: { egregoreId: string, aware: boolean
     return awareCount / awarenessReports.length;
 };
 
-const EFFICIENCY_TREND_THRESHOLD = 0.2;
-const AWARENESS_TREND_THRESHOLD = 0.05;
+const DEFAULT_EFFICIENCY_TREND_THRESHOLD = 0.2;
+const DEFAULT_AWARENESS_TREND_THRESHOLD = 0.05;
 
 const formatActorRecommendationTarget = (names: string[]): string => {
     if (names.length === 0) return 'targeted egregores';
@@ -183,14 +183,16 @@ export const runSystemLocus = (state: MetacosmState): SystemLocusState => {
     const previousAwarenessRate = getAwarenessRate(state.system_locus.awarenessReports);
 
     const hasPriorSnapshot = state.system_locus.efficiencyScores.length > 0 || state.system_locus.awarenessReports.length > 0;
+    const efficiencyTrendThreshold = state.system_config.systemLocusEfficiencyTrendThreshold ?? DEFAULT_EFFICIENCY_TREND_THRESHOLD;
+    const awarenessTrendThreshold = state.system_config.systemLocusAwarenessTrendThreshold ?? DEFAULT_AWARENESS_TREND_THRESHOLD;
 
     return {
         efficiencyScores,
         awarenessReports,
         emergentThemes,
         trendSummary: {
-            efficiency: detectTrend(currentAverageEfficiency, previousAverageEfficiency, EFFICIENCY_TREND_THRESHOLD, hasPriorSnapshot),
-            awareness: detectTrend(currentAwarenessRate, previousAwarenessRate, AWARENESS_TREND_THRESHOLD, hasPriorSnapshot),
+            efficiency: detectTrend(currentAverageEfficiency, previousAverageEfficiency, efficiencyTrendThreshold, hasPriorSnapshot),
+            awareness: detectTrend(currentAwarenessRate, previousAwarenessRate, awarenessTrendThreshold, hasPriorSnapshot),
         },
         currentMetrics: {
             averageEfficiency: currentAverageEfficiency,
