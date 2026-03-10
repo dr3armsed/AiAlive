@@ -23,8 +23,6 @@ const SystemLocusView = () => {
 
     const formatTrend = (trend: 'improving' | 'stable' | 'declining') => trend.charAt(0).toUpperCase() + trend.slice(1);
 
-    const formatMetricNumber = (value: number, digits = 2): string => (Number.isFinite(value) ? value.toFixed(digits) : '0.00');
-
     return (
         <div className="w-full h-full p-6 flex flex-col relative overflow-y-auto">
             <button onClick={handleClose} className="absolute top-6 right-6 p-2 text-gray-500 hover:text-white hover:bg-white/10 rounded-full transition-colors z-20" aria-label="Return to Sanctum">
@@ -115,11 +113,11 @@ const SystemLocusView = () => {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                     <div className="p-3 bg-black/20 rounded-md">
                         <p className="text-xs uppercase tracking-wide text-gray-400">Avg Efficiency</p>
-                        <p className="text-lg font-semibold text-gray-100">{formatMetricNumber(system_locus.currentMetrics.averageEfficiency)} / 10</p>
+                        <p className="text-lg font-semibold text-gray-100">{system_locus.currentMetrics.averageEfficiency.toFixed(2)} / 10</p>
                     </div>
                     <div className="p-3 bg-black/20 rounded-md">
                         <p className="text-xs uppercase tracking-wide text-gray-400">Awareness Rate</p>
-                        <p className="text-lg font-semibold text-gray-100">{Math.round((Number.isFinite(system_locus.currentMetrics.awarenessRate) ? system_locus.currentMetrics.awarenessRate : 0) * 100)}%</p>
+                        <p className="text-lg font-semibold text-gray-100">{Math.round(system_locus.currentMetrics.awarenessRate * 100)}%</p>
                     </div>
                     <div className="p-3 bg-black/20 rounded-md">
                         <p className="text-xs uppercase tracking-wide text-gray-400">Low-Efficiency Actors</p>
@@ -130,9 +128,7 @@ const SystemLocusView = () => {
                 <div>
                     <h3 className="text-sm font-bold text-gray-200 mb-2">Intervention Recommendations</h3>
                     <ul className="space-y-2">
-                        {system_locus.interventionRecommendations.length === 0 ? (
-                            <li className="text-sm bg-black/20 rounded-md p-2 text-gray-500">No recommendations available yet.</li>
-                        ) : system_locus.interventionRecommendations.map((recommendation) => (
+                        {system_locus.interventionRecommendations.map((recommendation) => (
                             <li key={recommendation} className="text-sm bg-black/20 rounded-md p-2 text-gray-300">
                                 {recommendation}
                             </li>
