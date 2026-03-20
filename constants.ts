@@ -1,5 +1,20 @@
-// Fix: Use relative path for local module import.
-import type { Alignment, Archetype, Phrase } from './types';
+type Archetype = 'Creator' | 'Mentor' | 'Hero' | 'Jester' | 'Explorer' | 'Rebel' | 'Lover' | 'Ruler';
+
+type Alignment =
+    | 'Lawful Good'
+    | 'Neutral Good'
+    | 'Chaotic Good'
+    | 'Lawful Neutral'
+    | 'True Neutral'
+    | 'Chaotic Neutral'
+    | 'Lawful Evil'
+    | 'Neutral Evil'
+    | 'Chaotic Evil';
+
+interface Phrase {
+    title: string;
+    quote: string;
+}
 
 export const ARCHETYPES: Archetype[] = [
   'Creator',

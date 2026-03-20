@@ -1,1 +1,1 @@
-export { OctoLLMCluster } from './OctoLLMCluster';
+export { App } from '../App';

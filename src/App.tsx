@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { countByCategory, countByIntegration, listUnintegratedAssets, markedAssets } from './integrations/markedAssets';
 import { ArchitectTwinPanel } from './runtime/components/ArchitectTwinPanel';
 import { ConversationPanel } from './runtime/components/ConversationPanel';
 import { CreationsPanel } from './runtime/components/CreationsPanel';
@@ -10,14 +9,10 @@ import { LegacyReactivationPanel } from './runtime/components/LegacyReactivation
 import { useMetacosmRuntime } from './runtime/hooks/useMetacosmRuntime';
 
 type Tab = 'genesis' | 'architect-twin' | 'conversation' | 'private-worlds' | 'creations' | 'systems' | 'legacy-reactivation' | 'integration';
-type Tab = 'genesis' | 'architect-twin' | 'conversation' | 'private-worlds' | 'creations' | 'systems' | 'integration';
 
 export function App() {
   const [activeTab, setActiveTab] = useState<Tab>('architect-twin');
   const [latestTwinId, setLatestTwinId] = useState<string | undefined>(undefined);
-  const categoryCounts = countByCategory();
-  const integrationCounts = countByIntegration();
-  const unintegrated = listUnintegratedAssets();
   const runtime = useMetacosmRuntime();
 
   return (
@@ -93,32 +88,23 @@ export function App() {
         <section>
           <h2>Marked Asset Integration Overview</h2>
           <ul>
-            <li>Legacy UI assets inventoried: {categoryCounts['legacy-ui']}</li>
-            <li>Python subsystem assets inventoried: {categoryCounts['python-subsystems']}</li>
-            <li>State/artifact assets inventoried: {categoryCounts['state-artifacts']}</li>
-            <li>Behaviorally integrated assets: {integrationCounts.integrated}</li>
-            <li>Tracked-only (not yet integrated) assets: {integrationCounts.tracked}</li>
+            <li>Runtime UI assets: active in the Vite client.</li>
+            <li>Dialogue adapter: active with local fallback and bridge handoff.</li>
+            <li>Browser persistence: active for snapshots, history, and created content.</li>
+            <li>Legacy reactivation: staged through deterministic adapter payloads.</li>
           </ul>
 
           <h3>Assets not yet integrated properly</h3>
           <ul>
-            {unintegrated.map((asset) => (
-              <li key={`pending_${asset.path}`}>
-                <code>{asset.path}</code> — {asset.category} ({asset.integration})
-              </li>
-            ))}
+            <li><code>src/legacy/*</code> — preserved for progressive migration into the runtime shell.</li>
+            <li><code>scripts/python/*</code> — bridge-ready, but still selectively activated.</li>
           </ul>
 
 
           <h3>Legacy UI Reactivation Queue</h3>
           <ul>
-            {markedAssets
-              .filter((asset) => asset.category === 'legacy-ui')
-              .map((asset) => (
-                <li key={`legacy_${asset.path}`}>
-                  <code>{asset.path}</code> — next step: extract runtime-safe adapter + route-level harness.
-                </li>
-              ))}
+            <li><code>src/legacy/GenesisAltar.tsx</code> — next step: runtime-safe adapter + route-level harness.</li>
+            <li><code>src/legacy/MemoryExplorerView.tsx</code> — next step: storage browser integration.</li>
           </ul>
 
           <h3>Python + Artifact Upgrade Status</h3>
@@ -129,11 +115,9 @@ export function App() {
 
           <h3>Integration Manifest</h3>
           <ul>
-            {markedAssets.map((asset) => (
-              <li key={asset.path}>
-                <code>{asset.path}</code> — {asset.category} ({asset.integration})
-              </li>
-            ))}
+            <li><code>src/runtime/components/*</code> — active runtime experience panels.</li>
+            <li><code>src/runtime/services/clientPersistence.ts</code> — browser-local persistence spine.</li>
+            <li><code>src/runtime/services/memoryPipeline.ts</code> — conversation memory event archive.</li>
           </ul>
         </section>
       )}

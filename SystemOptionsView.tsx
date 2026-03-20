@@ -7,6 +7,7 @@ import { useMetacosmState, useMetacosmDispatch } from '../context';
 import { XIcon, SettingsIcon } from '../components/icons';
 import { AXIOM_NAMES } from '../constants';
 import type { SystemConfig, CosmicAxioms, GameOptions } from '@/types';
+import { clampSystemLocusTrendThreshold, normalizeSystemLocusConfig } from './systemLocusState';
 
 const Toggle = ({ label, description, checked, onChange }: { label: string, description?: string, checked: boolean, onChange: () => void }) => (
      <div className="flex items-center justify-between">
@@ -35,6 +36,7 @@ const SystemOptionsView = () => {
     const [options, setOptions] = useState<GameOptions>(globalOptions);
     const [axioms, setAxioms] = useState<CosmicAxioms>(cosmic_axioms);
     const [hasChanges, setHasChanges] = useState(false);
+    const locusConfig = normalizeSystemLocusConfig(config);
 
     useEffect(() => {
         const configChanged = JSON.stringify(config) !== JSON.stringify(system_config);

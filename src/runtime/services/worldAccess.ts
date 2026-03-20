@@ -1,6 +1,4 @@
-import { RuntimeEgregore, RuntimePrivateWorld } from '../types';
-
-export type RuntimeWorldMode = 'shared-world' | 'private-world';
+import { RuntimeEgregore, RuntimePrivateWorld, RuntimeWorldMode } from '../types';
 
 export type RuntimeWorldPresence = Record<string, RuntimeWorldMode>;
 

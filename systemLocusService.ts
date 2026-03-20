@@ -1,4 +1,10 @@
 import type { MetacosmState, SystemLocusState, Egregore } from '@/types';
+import {
+    DEFAULT_SYSTEM_LOCUS_AWARENESS_TREND_THRESHOLD,
+    DEFAULT_SYSTEM_LOCUS_EFFICIENCY_TREND_THRESHOLD,
+    clampSystemLocusTrendThreshold,
+    normalizeSystemLocusState,
+} from './systemLocusState';
 
 // Placeholder for a more complex efficiency scoring system
 const scoreEgregoreAction = (egregore: Egregore): number => {

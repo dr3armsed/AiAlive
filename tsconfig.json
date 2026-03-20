@@ -13,6 +13,7 @@
     "types": [
       "node"
     ],
+    "baseUrl": ".",
     "moduleResolution": "bundler",
     "isolatedModules": true,
     "moduleDetection": "force",
@@ -25,5 +26,26 @@
     },
     "allowImportingTsExtensions": true,
     "noEmit": true
-  }
+  },
+  "include": [
+    "src/App.tsx",
+    "src/main.tsx",
+    "src/entry/**/*.ts",
+    "src/entry/**/*.tsx",
+    "src/runtime/**/*.ts",
+    "src/runtime/**/*.tsx",
+    "src/legacy/EmotionMeter.tsx",
+    "vite.config.ts"
+  ],
+  "exclude": [
+    "archive",
+    "artifacts",
+    "data",
+    "docs",
+    "scripts",
+    "test",
+    "tests",
+    "**/*-1.ts",
+    "**/*-1.tsx"
+  ]
 }

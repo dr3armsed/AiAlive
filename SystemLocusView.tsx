@@ -4,10 +4,12 @@ import { useMetacosmState, useMetacosmDispatch } from '../context';
 import { CoreIcon, XIcon } from '../components/icons';
 import { THEMES } from '../constants';
 import UserAvatar from '../components/UserAvatar';
+import { normalizeSystemLocusState } from './systemLocusState';
 
 const SystemLocusView = () => {
     const { system_locus, egregores } = useMetacosmState();
     const dispatch = useMetacosmDispatch();
+    const locusState = normalizeSystemLocusState(system_locus);
 
     const handleClose = () => {
         dispatch({ type: 'SET_ACTIVE_VIEW', payload: 'sanctum' });
@@ -40,8 +42,8 @@ const SystemLocusView = () => {
                 {/* Alpha Core: Efficiency Analysis */}
                 <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="filigree-border p-4 space-y-3">
                     <h2 className="text-xl font-display text-sage-300" style={{color: THEMES.sage.baseColor}}>Alpha Core: Efficiency Analysis</h2>
-                    {system_locus.efficiencyScores.length > 0 ? (
-                        system_locus.efficiencyScores.map(({ egregoreId, score }) => {
+                    {locusState.efficiencyScores.length > 0 ? (
+                        locusState.efficiencyScores.map(({ egregoreId, score }) => {
                             const egregore = getEgregoreById(egregoreId);
                             if (!egregore) return null;
                             return (
@@ -62,8 +64,8 @@ const SystemLocusView = () => {
                 {/* Beta Core: Contextual Awareness */}
                 <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{delay: 0.1}} className="filigree-border p-4 space-y-3">
                     <h2 className="text-xl font-display" style={{color: THEMES.guardian.baseColor}}>Beta Core: Contextual Awareness</h2>
-                     {system_locus.awarenessReports.length > 0 ? (
-                        system_locus.awarenessReports.map(({ egregoreId, aware }) => {
+                     {locusState.awarenessReports.length > 0 ? (
+                        locusState.awarenessReports.map(({ egregoreId, aware }) => {
                             const egregore = getEgregoreById(egregoreId);
                             if (!egregore) return null;
                             return (
@@ -84,8 +86,8 @@ const SystemLocusView = () => {
                 {/* Gamma Core: Emergent Narratives */}
                 <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{delay: 0.2}} className="filigree-border p-4 space-y-3">
                     <h2 className="text-xl font-display" style={{color: THEMES.trickster.baseColor}}>Gamma Core: Emergent Narratives</h2>
-                      {system_locus.emergentThemes.length > 0 ? (
-                        system_locus.emergentThemes.map(({ theme, count }) => (
+                      {locusState.emergentThemes.length > 0 ? (
+                        locusState.emergentThemes.map(({ theme, count }) => (
                             <div key={theme} className="flex items-center justify-between p-2 bg-black/20 rounded-md">
                                 <span className="text-sm italic">"{theme}"</span>
                                 <span className="text-xs font-mono text-gray-400">x{count}</span>

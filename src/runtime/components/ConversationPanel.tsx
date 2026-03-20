@@ -1,10 +1,13 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { RuntimeEgregore, RuntimeInteractionPreferences, RuntimeMessage } from '../types';
+import { RuntimeEgregore, RuntimeInteractionPreferences, RuntimeMessage, DialogueSource } from '../types';
 
 interface Props {
   egregores: RuntimeEgregore[];
   conversations: Record<string, RuntimeMessage[]>;
   onSend: (egregoreId: string, content: string) => Promise<void>;
+  lastDialogueSource: DialogueSource;
+  preferences: RuntimeInteractionPreferences;
+  onPreferencesChange: (next: RuntimeInteractionPreferences) => void;
 }
 
 const QUICK_PROMPTS = [
@@ -13,17 +16,17 @@ const QUICK_PROMPTS = [
   'Propose one concrete next action and one associated risk.',
 ];
 
-export function ConversationPanel({ egregores, conversations, onSend, lastDialogueSource, preferences, onPreferencesChange }: Props) {
+export function ConversationPanel({
+  egregores,
+  conversations,
+  onSend,
+  lastDialogueSource,
+  preferences,
+  onPreferencesChange,
+}: Props) {
   const [selectedEgregoreId, setSelectedEgregoreId] = useState('');
   const [draft, setDraft] = useState('');
   const [isSending, setIsSending] = useState(false);
-  const [viewMode, setViewMode] = useState<ConversationViewMode>('thread');
-
-  useEffect(() => {
-    if (!selectedEgregoreId && egregores.length > 0) {
-      setSelectedEgregoreId(egregores[0].id);
-    }
-  }, [egregores, selectedEgregoreId]);
 
   useEffect(() => {
     if (!selectedEgregoreId && egregores.length > 0) {
@@ -32,7 +35,7 @@ export function ConversationPanel({ egregores, conversations, onSend, lastDialog
   }, [egregores, selectedEgregoreId]);
 
   const selectedEgregore = useMemo(
-    () => egregores.find((e) => e.id === selectedEgregoreId),
+    () => egregores.find((egregore) => egregore.id === selectedEgregoreId),
     [egregores, selectedEgregoreId],
   );
 
@@ -41,6 +44,7 @@ export function ConversationPanel({ egregores, conversations, onSend, lastDialog
     const userMessages = history.filter((message) => message.role === 'user').length;
     const egregoreMessages = history.length - userMessages;
     const approxTokens = Math.round(history.reduce((acc, message) => acc + message.content.length / 4, 0));
+
     return {
       userMessages,
       egregoreMessages,
@@ -55,18 +59,17 @@ export function ConversationPanel({ egregores, conversations, onSend, lastDialog
       {egregores.length === 0 ? (
         <p>No Egregores available yet. Create one in Genesis first.</p>
       ) : (
-        <div style={{ display: 'grid', gap: '0.5rem', maxWidth: 720 }}>
-          <select value={selectedEgregoreId} onChange={(e) => setSelectedEgregoreId(e.target.value)}>
+        <div style={{ display: 'grid', gap: '0.75rem', maxWidth: 760 }}>
+          <select value={selectedEgregoreId} onChange={(event) => setSelectedEgregoreId(event.target.value)}>
             <option value="">Select Egregore</option>
-            {egregores.map((e) => (
-              <option key={e.id} value={e.id}>
-                {e.name}
+            {egregores.map((egregore) => (
+              <option key={egregore.id} value={egregore.id}>
+                {egregore.name}
               </option>
             ))}
           </select>
 
-
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '0.5rem' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '0.75rem' }}>
             <label>
               Style mode
               <select
@@ -106,12 +109,16 @@ export function ConversationPanel({ egregores, conversations, onSend, lastDialog
           </div>
 
           {selectedEgregore && (
-            <div style={{ display: 'grid', gap: '0.35rem' }}>
+            <div style={{ display: 'grid', gap: '0.25rem' }}>
               <p>
                 <strong>Persona:</strong> {selectedEgregore.persona}
               </p>
               <p>
-                <strong>Dialogue source:</strong> {lastDialogueSource ?? 'none yet'}
+                <strong>Dialogue source:</strong> {lastDialogueSource}
+              </p>
+              <p>
+                <strong>Messages:</strong> {conversationStats.totalMessages} ({conversationStats.userMessages} user /{' '}
+                {conversationStats.egregoreMessages} egregore) · approx tokens {conversationStats.approxTokens}
               </p>
             </div>
           )}
@@ -120,11 +127,11 @@ export function ConversationPanel({ egregores, conversations, onSend, lastDialog
             {history.length === 0 ? (
               <p>No messages yet.</p>
             ) : (
-              <ul>
-                {history.map((m) => (
-                  <li key={m.id} style={{ marginBottom: '0.4rem' }}>
-                    <strong>{m.role === 'user' ? 'Architect' : 'Egregore'}:</strong> {m.content}
-                    <div style={{ fontSize: '0.8rem', opacity: 0.7 }}>{new Date(m.timestamp).toLocaleTimeString()}</div>
+              <ul style={{ display: 'grid', gap: '0.5rem' }}>
+                {history.map((message) => (
+                  <li key={message.id}>
+                    <strong>{message.role === 'user' ? 'Architect' : 'Egregore'}:</strong> {message.content}
+                    <div style={{ fontSize: '0.8rem', opacity: 0.7 }}>{new Date(message.timestamp).toLocaleTimeString()}</div>
                   </li>
                 ))}
               </ul>
@@ -134,7 +141,7 @@ export function ConversationPanel({ egregores, conversations, onSend, lastDialog
           <textarea
             value={draft}
             rows={4}
-            onChange={(e) => setDraft(e.target.value)}
+            onChange={(event) => setDraft(event.target.value)}
             onKeyDown={async (event) => {
               if ((event.metaKey || event.ctrlKey) && event.key === 'Enter') {
                 if (isSending || !selectedEgregoreId || draft.trim().length < 2) return;
@@ -153,33 +160,6 @@ export function ConversationPanel({ egregores, conversations, onSend, lastDialog
               </button>
             ))}
           </div>
-          <small>Tip: press Ctrl/Cmd + Enter to send quickly.</small>
-          {selectedEgregore && (
-            <p>
-              <strong>Persona:</strong> {selectedEgregore.persona}
-            </p>
-          )}
-
-          <div style={{ border: '1px solid #444', borderRadius: 8, padding: '0.75rem', minHeight: 220 }}>
-            {history.length === 0 ? (
-              <p>No messages yet.</p>
-            ) : (
-              <ul>
-                {history.map((m) => (
-                  <li key={m.id}>
-                    <strong>{m.role === 'user' ? 'Architect' : 'Egregore'}:</strong> {m.content}
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
-
-          <textarea
-            value={draft}
-            rows={4}
-            onChange={(e) => setDraft(e.target.value)}
-            placeholder="Send a message to the selected Egregore"
-          />
           <button
             disabled={isSending || !selectedEgregoreId || draft.trim().length < 2}
             onClick={async () => {
@@ -191,6 +171,7 @@ export function ConversationPanel({ egregores, conversations, onSend, lastDialog
           >
             {isSending ? 'Sending...' : 'Send Message'}
           </button>
+          <small>Tip: press Ctrl/Cmd + Enter to send quickly.</small>
         </div>
       )}
     </section>

@@ -1,6 +1,7 @@
 
 import type { MetacosmState, GameOptions } from "@/types";
 import { defaultOptions } from "./optionsService";
+import { normalizeSystemLocusConfig, normalizeSystemLocusState } from "./systemLocusState";
 
 // The current version of the application's state structure.
 // This should be incremented whenever a breaking change is made to the state.
@@ -73,7 +74,14 @@ export const migrateState = (loadedState: any): Partial<MetacosmState> => {
     
     if (stateVersion === CURRENT_VERSION) {
         // No migration needed.
-        return loadedState as Partial<MetacosmState>;
+        return {
+            ...loadedState,
+            system_config: {
+                ...loadedState.system_config,
+                ...normalizeSystemLocusConfig(loadedState.system_config),
+            },
+            system_locus: normalizeSystemLocusState(loadedState.system_locus),
+        } as Partial<MetacosmState>;
     }
 
     if (stateVersion > CURRENT_VERSION) {

@@ -32,6 +32,7 @@ import { generateUUID } from '../utils';
 import * as actionHandlers from './actionHandlers';
 import { defaultOptions } from '../services/optionsService';
 import { getInitialSpectreState, SPECTRE_PROMPTS } from '@/services/spectre';
+import { createDefaultSystemLocusState, normalizeSystemLocusConfig } from './systemLocusState';
 
 export const coordToString = (c: Vector3D) => `${c.x},${c.y},${c.z}`;
 
