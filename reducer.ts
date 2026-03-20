@@ -208,7 +208,8 @@ export const getInitialState = (params?: InitialStateParams): MetacosmState => {
           disableResetOnLoadFailure: false,
           protectEgregoresOnRollback: false,
           protectWorksOnRollback: false,
-          ...normalizeSystemLocusConfig(),
+          systemLocusEfficiencyTrendThreshold: 0.2,
+          systemLocusAwarenessTrendThreshold: 0.05,
           genesisSeed: params?.genesisSeed || '',
       },
       viewCenter: { x: world.bounds.width / 2, y: world.bounds.height / 2 },
@@ -227,7 +228,21 @@ export const getInitialState = (params?: InitialStateParams): MetacosmState => {
       is_blueprint_mode_active: false,
       stateHistory: [],
       continuity_log: [],
-      system_locus: createDefaultSystemLocusState(),
+      system_locus: {
+        efficiencyScores: [],
+        awarenessReports: [],
+        emergentThemes: [],
+        trendSummary: {
+            efficiency: 'stable',
+            awareness: 'stable',
+        },
+        currentMetrics: {
+            averageEfficiency: 0,
+            awarenessRate: 0,
+            lowEfficiencyCount: 0,
+        },
+        interventionRecommendations: [],
+      },
     };
 };
 

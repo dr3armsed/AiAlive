@@ -5,6 +5,10 @@
 The Genmeta Metacosm has **comprehensive content creation capabilities** with **20 different content types** powered by
 the **Metacosmic Forge** and **Gemini-2.5-flash** backend.
 
+> 🗂️ **Directory structure:** each of the 20 types now lives in its own
+> subdirectory under `src/creationTypes/` with metadata and (future) helpers.
+
+
 ---
 
 ## 🎨 ALL 20 AVAILABLE CONTENT TYPES

@@ -109,6 +109,9 @@ const getAwarenessRate = (awarenessReports: { egregoreId: string, aware: boolean
     return awareCount / awarenessReports.length;
 };
 
+const DEFAULT_EFFICIENCY_TREND_THRESHOLD = 0.2;
+const DEFAULT_AWARENESS_TREND_THRESHOLD = 0.05;
+
 const formatActorRecommendationTarget = (names: string[]): string => {
     if (names.length === 0) return 'targeted egregores';
     if (names.length <= 3) return names.join(', ');
@@ -117,6 +120,11 @@ const formatActorRecommendationTarget = (names: string[]): string => {
     return `${listed}, and ${names.length - 3} more`;
 };
 
+
+const sanitizeTrendThreshold = (value: number | undefined, fallback: number): number => {
+    if (typeof value !== 'number' || Number.isNaN(value)) return fallback;
+    return Math.max(0.01, Math.min(1, value));
+};
 
 const detectTrend = (
     current: number,
@@ -166,10 +174,6 @@ const generateInterventionRecommendations = (
         recommendations.add('Seed a unifying narrative prompt to encourage stronger emergent themes.');
     }
 
-    if (lowEfficiencyActors.length > 0 || awarenessRate < 0.4) {
-        recommendations.add('Stage high-impact interventions in a contained rehearsal before committing them globally.');
-    }
-
     if (recommendations.size === 0) {
         recommendations.add('System balance is nominal. Continue passive monitoring.');
     }
@@ -181,25 +185,23 @@ const generateInterventionRecommendations = (
  * Main service function to run all locus analyses and return the combined state.
  */
 export const runSystemLocus = (state: MetacosmState): SystemLocusState => {
-    const previousLocusState = normalizeSystemLocusState(state.system_locus);
     const efficiencyScores = EfficiencyAnalysisService(state);
     const awarenessReports = ContextualAwarenessScanner(state);
     const emergentThemes = EmergentNarrativeSynthesizer(state);
 
     const currentAverageEfficiency = getAverageEfficiency(efficiencyScores);
-    const previousAverageEfficiency = getAverageEfficiency(previousLocusState.efficiencyScores);
+    const previousAverageEfficiency = getAverageEfficiency(state.system_locus.efficiencyScores);
     const currentAwarenessRate = getAwarenessRate(awarenessReports);
-    const previousAwarenessRate = getAwarenessRate(previousLocusState.awarenessReports);
+    const previousAwarenessRate = getAwarenessRate(state.system_locus.awarenessReports);
 
-    const hasPriorEfficiencySnapshot = previousLocusState.efficiencyScores.length > 0;
-    const hasPriorAwarenessSnapshot = previousLocusState.awarenessReports.length > 0;
-    const efficiencyTrendThreshold = clampSystemLocusTrendThreshold(
+    const hasPriorSnapshot = state.system_locus.efficiencyScores.length > 0 || state.system_locus.awarenessReports.length > 0;
+    const efficiencyTrendThreshold = sanitizeTrendThreshold(
         state.system_config.systemLocusEfficiencyTrendThreshold,
-        DEFAULT_SYSTEM_LOCUS_EFFICIENCY_TREND_THRESHOLD
+        DEFAULT_EFFICIENCY_TREND_THRESHOLD
     );
-    const awarenessTrendThreshold = clampSystemLocusTrendThreshold(
+    const awarenessTrendThreshold = sanitizeTrendThreshold(
         state.system_config.systemLocusAwarenessTrendThreshold,
-        DEFAULT_SYSTEM_LOCUS_AWARENESS_TREND_THRESHOLD
+        DEFAULT_AWARENESS_TREND_THRESHOLD
     );
 
     return {
@@ -207,8 +209,8 @@ export const runSystemLocus = (state: MetacosmState): SystemLocusState => {
         awarenessReports,
         emergentThemes,
         trendSummary: {
-            efficiency: detectTrend(currentAverageEfficiency, previousAverageEfficiency, efficiencyTrendThreshold, hasPriorEfficiencySnapshot),
-            awareness: detectTrend(currentAwarenessRate, previousAwarenessRate, awarenessTrendThreshold, hasPriorAwarenessSnapshot),
+            efficiency: detectTrend(currentAverageEfficiency, previousAverageEfficiency, efficiencyTrendThreshold, hasPriorSnapshot),
+            awareness: detectTrend(currentAwarenessRate, previousAwarenessRate, awarenessTrendThreshold, hasPriorSnapshot),
         },
         currentMetrics: {
             averageEfficiency: currentAverageEfficiency,

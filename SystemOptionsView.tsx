@@ -25,6 +25,9 @@ const Toggle = ({ label, description, checked, onChange }: { label: string, desc
     </div>
 );
 
+
+const clampTrendThreshold = (value: number): number => Math.max(0.01, Math.min(1, value));
+
 const SystemOptionsView = () => {
     const { system_config, cosmic_axioms, options: globalOptions } = useMetacosmState();
     const dispatch = useMetacosmDispatch();
@@ -150,28 +153,28 @@ const SystemOptionsView = () => {
                     <div>
                         <label htmlFor="locus-efficiency-threshold-slider" className="flex justify-between text-sm text-gray-300">
                             <span>System Locus Efficiency Trend Threshold</span>
-                            <span>{locusConfig.systemLocusEfficiencyTrendThreshold.toFixed(2)}</span>
+                            <span>{(config.systemLocusEfficiencyTrendThreshold ?? 0.2).toFixed(2)}</span>
                         </label>
                         <input
                             id="locus-efficiency-threshold-slider"
                             type="range"
                             min="0.01" max="1" step="0.01"
-                            value={locusConfig.systemLocusEfficiencyTrendThreshold}
-                            onChange={(e) => handleConfigChange('systemLocusEfficiencyTrendThreshold', clampSystemLocusTrendThreshold(Number(e.target.value), locusConfig.systemLocusEfficiencyTrendThreshold))}
+                            value={config.systemLocusEfficiencyTrendThreshold ?? 0.2}
+                            onChange={(e) => handleConfigChange('systemLocusEfficiencyTrendThreshold', clampTrendThreshold(Number(e.target.value)))}
                             className="w-full appearance-none bg-transparent accent-metacosm-accent cursor-pointer [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-black/25 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-metacosm-accent"
                         />
                     </div>
                     <div>
                         <label htmlFor="locus-awareness-threshold-slider" className="flex justify-between text-sm text-gray-300">
                             <span>System Locus Awareness Trend Threshold</span>
-                            <span>{locusConfig.systemLocusAwarenessTrendThreshold.toFixed(2)}</span>
+                            <span>{(config.systemLocusAwarenessTrendThreshold ?? 0.05).toFixed(2)}</span>
                         </label>
                         <input
                             id="locus-awareness-threshold-slider"
                             type="range"
                             min="0.01" max="1" step="0.01"
-                            value={locusConfig.systemLocusAwarenessTrendThreshold}
-                            onChange={(e) => handleConfigChange('systemLocusAwarenessTrendThreshold', clampSystemLocusTrendThreshold(Number(e.target.value), locusConfig.systemLocusAwarenessTrendThreshold))}
+                            value={config.systemLocusAwarenessTrendThreshold ?? 0.05}
+                            onChange={(e) => handleConfigChange('systemLocusAwarenessTrendThreshold', clampTrendThreshold(Number(e.target.value)))}
                             className="w-full appearance-none bg-transparent accent-metacosm-accent cursor-pointer [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-black/25 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-metacosm-accent"
                         />
                     </div>
