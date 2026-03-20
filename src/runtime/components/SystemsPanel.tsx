@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { EmotionMeter } from '../../legacy/EmotionMeter';
 import { RuntimeSystem, RuntimeTelemetry } from '../types';
 
@@ -6,6 +6,8 @@ interface Props {
   systems: RuntimeSystem[];
   telemetry: RuntimeTelemetry;
 }
+
+type SystemsViewMode = 'cards' | 'list';
 
 function emotionToProfile(emotion: string) {
   const normalized = emotion.toLowerCase();
@@ -30,6 +32,7 @@ export function SystemsPanel({ systems, telemetry }: Props) {
           <option value="list">Classic List</option>
         </select>
       </label>
+
       <p>
         Telemetry — total messages: <strong>{telemetry.totalMessages}</strong>, Unknown messages:{' '}
         <strong>{telemetry.unknownMessages}</strong>, dialogue source: <strong>{telemetry.lastDialogueSource}</strong>
@@ -37,6 +40,17 @@ export function SystemsPanel({ systems, telemetry }: Props) {
       <p>
         Runtime diagnostics — latency: <strong>{telemetry.lastLatencyMs ?? 'n/a'}ms</strong>, model:{' '}
         <strong>{telemetry.lastModel ?? 'n/a'}</strong>, errors: <strong>{telemetry.errorCount}</strong>
+      </p>
+      <p>
+        Browser persistence — snapshots: <strong>{telemetry.storageStats.snapshotCount}</strong>, history entries:{' '}
+        <strong>{telemetry.storageStats.historyCount}</strong>, created artifacts:{' '}
+        <strong>{telemetry.storageStats.createdContentCount}</strong>
+      </p>
+      <p>
+        Substrate health — egregores: <strong>{telemetry.substrateHealth.egregoreCount}</strong>, worlds:{' '}
+        <strong>{telemetry.substrateHealth.worldCount}</strong>, creations:{' '}
+        <strong>{telemetry.substrateHealth.creationCount}</strong>, coherence issues:{' '}
+        <strong>{telemetry.substrateHealth.coherenceIssueCount}</strong>
       </p>
 
       {telemetry.lastError && (
@@ -63,22 +77,40 @@ export function SystemsPanel({ systems, telemetry }: Props) {
         </>
       )}
 
-      <ul>
-        {systems.map((system) => (
-          <li key={system.id} style={{ marginBottom: '0.75rem' }}>
-            <strong>{system.name}</strong> — {system.status}
-            <br />
-            <span>{system.description}</span>
-            <ul>
-              {system.subsystems.map((sub) => (
-                <li key={sub.id}>
-                  • {sub.name} ({sub.status})
-                </li>
-              ))}
-            </ul>
-          </li>
-        ))}
-      </ul>
+      {viewMode === 'cards' ? (
+        <div style={{ display: 'grid', gap: '0.75rem', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))' }}>
+          {systems.map((system) => (
+            <article key={system.id} style={{ border: '1px solid #334155', borderRadius: 12, padding: '0.9rem' }}>
+              <strong>{system.name}</strong> — {system.status}
+              <p>{system.description}</p>
+              <ul>
+                {system.subsystems.map((subsystem) => (
+                  <li key={subsystem.id}>
+                    • {subsystem.name} ({subsystem.status})
+                  </li>
+                ))}
+              </ul>
+            </article>
+          ))}
+        </div>
+      ) : (
+        <ul>
+          {systems.map((system) => (
+            <li key={system.id} style={{ marginBottom: '0.75rem' }}>
+              <strong>{system.name}</strong> — {system.status}
+              <br />
+              <span>{system.description}</span>
+              <ul>
+                {system.subsystems.map((subsystem) => (
+                  <li key={subsystem.id}>
+                    • {subsystem.name} ({subsystem.status})
+                  </li>
+                ))}
+              </ul>
+            </li>
+          ))}
+        </ul>
+      )}
     </section>
   );
 }

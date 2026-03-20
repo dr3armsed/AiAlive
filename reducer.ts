@@ -32,6 +32,7 @@ import { generateUUID } from '../utils';
 import * as actionHandlers from './actionHandlers';
 import { defaultOptions } from '../services/optionsService';
 import { getInitialSpectreState, SPECTRE_PROMPTS } from '@/services/spectre';
+import { createDefaultSystemLocusState, normalizeSystemLocusConfig } from './systemLocusState';
 
 export const coordToString = (c: Vector3D) => `${c.x},${c.y},${c.z}`;
 
@@ -207,6 +208,7 @@ export const getInitialState = (params?: InitialStateParams): MetacosmState => {
           disableResetOnLoadFailure: false,
           protectEgregoresOnRollback: false,
           protectWorksOnRollback: false,
+          ...normalizeSystemLocusConfig(),
           genesisSeed: params?.genesisSeed || '',
       },
       viewCenter: { x: world.bounds.width / 2, y: world.bounds.height / 2 },
@@ -225,11 +227,7 @@ export const getInitialState = (params?: InitialStateParams): MetacosmState => {
       is_blueprint_mode_active: false,
       stateHistory: [],
       continuity_log: [],
-      system_locus: {
-        efficiencyScores: [],
-        awarenessReports: [],
-        emergentThemes: [],
-      },
+      system_locus: createDefaultSystemLocusState(),
     };
 };
 

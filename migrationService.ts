@@ -1,10 +1,11 @@
 
 import type { MetacosmState, GameOptions } from "@/types";
 import { defaultOptions } from "./optionsService";
+import { normalizeSystemLocusConfig, normalizeSystemLocusState } from "./systemLocusState";
 
 // The current version of the application's state structure.
 // This should be incremented whenever a breaking change is made to the state.
-export const CURRENT_VERSION = 14;
+export const CURRENT_VERSION = 15;
 
 /**
  * A record of migration functions. Each key represents the version
@@ -36,8 +37,22 @@ const migrators: Record<number, (state: any) => any> = {
         if (typeof state.system_config.disableResetOnLoadFailure === 'undefined') {
             state.system_config.disableResetOnLoadFailure = false;
         }
-        
+
         state.version = 14;
+        return state;
+    },
+    14: (state) => {
+        console.log("Migrating state from v14 to v15...");
+        if (!state.system_config) {
+            state.system_config = {};
+        }
+        state.system_config = {
+            ...state.system_config,
+            ...normalizeSystemLocusConfig(state.system_config),
+        };
+        state.system_locus = normalizeSystemLocusState(state.system_locus);
+
+        state.version = 15;
         return state;
     }
     // Add more migrators here as the application evolves.
@@ -55,7 +70,14 @@ export const migrateState = (loadedState: any): Partial<MetacosmState> => {
     
     if (stateVersion === CURRENT_VERSION) {
         // No migration needed.
-        return loadedState as Partial<MetacosmState>;
+        return {
+            ...loadedState,
+            system_config: {
+                ...loadedState.system_config,
+                ...normalizeSystemLocusConfig(loadedState.system_config),
+            },
+            system_locus: normalizeSystemLocusState(loadedState.system_locus),
+        } as Partial<MetacosmState>;
     }
 
     if (stateVersion > CURRENT_VERSION) {

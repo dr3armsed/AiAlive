@@ -7,6 +7,7 @@ import { useMetacosmState, useMetacosmDispatch } from '../context';
 import { XIcon, SettingsIcon } from '../components/icons';
 import { AXIOM_NAMES } from '../constants';
 import type { SystemConfig, CosmicAxioms, GameOptions } from '@/types';
+import { clampSystemLocusTrendThreshold, normalizeSystemLocusConfig } from './systemLocusState';
 
 const Toggle = ({ label, description, checked, onChange }: { label: string, description?: string, checked: boolean, onChange: () => void }) => (
      <div className="flex items-center justify-between">
@@ -24,7 +25,6 @@ const Toggle = ({ label, description, checked, onChange }: { label: string, desc
     </div>
 );
 
-
 const SystemOptionsView = () => {
     const { system_config, cosmic_axioms, options: globalOptions } = useMetacosmState();
     const dispatch = useMetacosmDispatch();
@@ -33,6 +33,7 @@ const SystemOptionsView = () => {
     const [options, setOptions] = useState<GameOptions>(globalOptions);
     const [axioms, setAxioms] = useState<CosmicAxioms>(cosmic_axioms);
     const [hasChanges, setHasChanges] = useState(false);
+    const locusConfig = normalizeSystemLocusConfig(config);
 
     useEffect(() => {
         const configChanged = JSON.stringify(config) !== JSON.stringify(system_config);
@@ -145,6 +146,35 @@ const SystemOptionsView = () => {
                         checked={config.protectWorksOnRollback}
                         onChange={() => handleConfigChange('protectWorksOnRollback', !config.protectWorksOnRollback)}
                     />
+
+                    <div>
+                        <label htmlFor="locus-efficiency-threshold-slider" className="flex justify-between text-sm text-gray-300">
+                            <span>System Locus Efficiency Trend Threshold</span>
+                            <span>{locusConfig.systemLocusEfficiencyTrendThreshold.toFixed(2)}</span>
+                        </label>
+                        <input
+                            id="locus-efficiency-threshold-slider"
+                            type="range"
+                            min="0.01" max="1" step="0.01"
+                            value={locusConfig.systemLocusEfficiencyTrendThreshold}
+                            onChange={(e) => handleConfigChange('systemLocusEfficiencyTrendThreshold', clampSystemLocusTrendThreshold(Number(e.target.value), locusConfig.systemLocusEfficiencyTrendThreshold))}
+                            className="w-full appearance-none bg-transparent accent-metacosm-accent cursor-pointer [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-black/25 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-metacosm-accent"
+                        />
+                    </div>
+                    <div>
+                        <label htmlFor="locus-awareness-threshold-slider" className="flex justify-between text-sm text-gray-300">
+                            <span>System Locus Awareness Trend Threshold</span>
+                            <span>{locusConfig.systemLocusAwarenessTrendThreshold.toFixed(2)}</span>
+                        </label>
+                        <input
+                            id="locus-awareness-threshold-slider"
+                            type="range"
+                            min="0.01" max="1" step="0.01"
+                            value={locusConfig.systemLocusAwarenessTrendThreshold}
+                            onChange={(e) => handleConfigChange('systemLocusAwarenessTrendThreshold', clampSystemLocusTrendThreshold(Number(e.target.value), locusConfig.systemLocusAwarenessTrendThreshold))}
+                            className="w-full appearance-none bg-transparent accent-metacosm-accent cursor-pointer [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-black/25 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-metacosm-accent"
+                        />
+                    </div>
                 </motion.div>
                 
                 {/* Gameplay Options */}

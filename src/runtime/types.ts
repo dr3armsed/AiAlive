@@ -32,6 +32,8 @@ export interface RuntimeMessage {
   timestamp: string;
 }
 
+export type RuntimeWorldMode = 'shared-world' | 'private-world';
+
 export interface RuntimeSubsystem {
   id: string;
   name: string;
@@ -71,6 +73,27 @@ export interface RuntimeInteractionPreferences {
   memoryDepth: number;
 }
 
+export interface RuntimeStorageStats {
+  snapshotCount: number;
+  historyCount: number;
+  createdContentCount: number;
+  lastPersistedAt: string | null;
+}
+
+export interface RuntimeMemoryStats {
+  eventCount: number;
+  pendingDatasetExampleCount: number;
+  lastTraceId: string | null;
+}
+
+export interface RuntimeSubstrateHealth {
+  coherenceIssueCount: number;
+  linkedProjectionCount: number;
+  egregoreCount: number;
+  worldCount: number;
+  creationCount: number;
+}
+
 export interface RuntimeTelemetry {
   totalMessages: number;
   unknownMessages: number;
@@ -80,4 +103,10 @@ export interface RuntimeTelemetry {
   errorCount: number;
   lastModel: string | null;
   lastError: string | null;
+  activeStyleMode: DialogueStyleMode;
+  activeSourceMode: DialogueSourceMode;
+  experienceMode: ExperienceMode;
+  storageStats: RuntimeStorageStats;
+  memoryStats: RuntimeMemoryStats;
+  substrateHealth: RuntimeSubstrateHealth;
 }
