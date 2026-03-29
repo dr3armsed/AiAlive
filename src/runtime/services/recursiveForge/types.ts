@@ -1,5 +1,7 @@
 export type ExistentialState = 'Stable' | 'FuriousDrive' | 'Despair' | 'Expansion';
 
+export type Rng = () => number;
+
 export interface EmotionState {
   current: string;
   intensity: number; // 0..1
@@ -112,8 +114,37 @@ export interface EvolutionSummary {
   history: Array<{ generation: number; bestScore: number; archetype: string }>;
 }
 
+export interface PulseOptions {
+  rng?: Rng;
+  timestampMs?: number;
+  strictInvariants?: boolean;
+}
+
 export interface PulseResult {
   response: string;
   newState: SoulState;
   existential: ExistentialState;
+  invariantViolations: string[];
+}
+
+export interface StateInvariantIssue {
+  path: string;
+  issue: string;
+  repaired: boolean;
+}
+
+export interface EvolutionContext {
+  generation: number;
+  candidateIndex: number;
+  sandboxGB: number;
+  rng: Rng;
+}
+
+export interface EvolutionEvaluator {
+  evaluate(component: CompiledComponent, genome: Genome, context: EvolutionContext): Promise<SandboxTelemetry>;
+}
+
+export interface EvolutionOptions {
+  evaluator?: EvolutionEvaluator;
+  rng?: Rng;
 }

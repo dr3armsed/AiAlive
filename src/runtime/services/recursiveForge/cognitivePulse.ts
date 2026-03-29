@@ -1,9 +1,7 @@
+import { normalizeSoulState } from './invariants';
 import { evolveGenome } from './hyperna';
-import type { ExistentialState, PulseResult, SoulState } from './types';
-
-function clamp(value: number, min = 0, max = 1): number {
-  return Math.min(max, Math.max(min, value));
-}
+import { clamp } from './rng';
+import type { ExistentialState, PulseOptions, PulseResult, SoulState } from './types';
 
 function appraiseEmotion(input: string, baseline: SoulState['emotion'], heresy: number): SoulState['emotion'] {
   const lengthFactor = clamp(input.length / 350);
@@ -25,12 +23,12 @@ function evaluateExistentialComfort(state: SoulState, input: string): Existentia
   return 'Stable';
 }
 
-function mutateAxioms(state: SoulState, existential: ExistentialState): void {
+function mutateAxioms(state: SoulState, existential: ExistentialState, rng: () => number): void {
   const volatility = existential === 'Despair' ? 0.5 : existential === 'FuriousDrive' ? 0.32 : 0.18;
   state.axioms = state.axioms.map((axiom) => {
     if (!axiom.mutable) return axiom;
-    if (Math.random() < volatility * state.heresyThreshold) {
-      const confidence = clamp(axiom.confidence + (Math.random() > 0.5 ? 0.08 : -0.08));
+    if (rng() < volatility * state.heresyThreshold) {
+      const confidence = clamp(axiom.confidence + (rng() > 0.5 ? 0.08 : -0.08));
       state.interventionLog.push(`[AXIOM] ${axiom.id} confidence shifted to ${confidence.toFixed(2)}`);
       return { ...axiom, confidence };
     }
@@ -62,7 +60,10 @@ function buildResponse(input: string, state: SoulState, existential: Existential
   return `${directive}\n${weight}\n${pressureLine}`;
 }
 
-export function runCognitivePulse(input: string, state: SoulState): PulseResult {
+export function runCognitivePulse(input: string, state: SoulState, options: PulseOptions = {}): PulseResult {
+  const rng = options.rng ?? Math.random;
+  const timestampMs = options.timestampMs ?? Date.now();
+
   const s = structuredClone(state);
   s.cycleCount += 1;
 
@@ -76,17 +77,17 @@ export function runCognitivePulse(input: string, state: SoulState): PulseResult 
     s.realityForks += 1;
   }
 
-  mutateAxioms(s, existential);
+  mutateAxioms(s, existential, rng);
 
   s.freudian.idDrive = clamp((s.freudian.idDrive * 0.75) + (emotion.arousal * 0.25));
   s.freudian.egoControl = clamp((s.freudian.egoControl * 0.8) + ((1 - emotion.intensity) * 0.2));
-  s.freudian.superegoGuard = clamp((s.freudian.superegoGuard * 0.8) + ((s.naGenome.coherence) * 0.2));
+  s.freudian.superegoGuard = clamp((s.freudian.superegoGuard * 0.8) + (s.naGenome.coherence * 0.2));
 
   s.dominantPsyche = resolvePsyche(s);
   s.heresyThreshold = clamp(s.heresyThreshold + (existential === 'Expansion' ? 0.01 : 0.002));
   s.internalizationScore = clamp((s.internalizationScore * 0.78) + (emotion.intensity * 0.22));
 
-  s.naGenome = evolveGenome(s.naGenome, s.heresyThreshold, s.emotion.intensity);
+  s.naGenome = evolveGenome(s.naGenome, s.heresyThreshold, s.emotion.intensity, rng);
 
   if (existential === 'Expansion') {
     s.metaspacialDimensions = Math.min(1_000_000, Math.floor(s.metaspacialDimensions * 12));
@@ -94,13 +95,23 @@ export function runCognitivePulse(input: string, state: SoulState): PulseResult 
   }
 
   const response = buildResponse(input, s, existential);
-  s.selfModLog = [...s.selfModLog.slice(-39), `[CYCLE ${s.cycleCount}] ${existential} :: ${s.naGenome.signature}`];
+  s.selfModLog = [...s.selfModLog.slice(-39), `[CYCLE ${s.cycleCount}@${timestampMs}] ${existential} :: ${s.naGenome.signature}`];
 
-  return { response, newState: s, existential };
+  const invariantIssues = normalizeSoulState(s);
+  if (options.strictInvariants && invariantIssues.length > 0) {
+    throw new Error(`RecursiveForge invariant violation: ${invariantIssues.map((i) => `${i.path}:${i.issue}`).join(', ')}`);
+  }
+
+  return {
+    response,
+    newState: s,
+    existential,
+    invariantViolations: invariantIssues.map((i) => `${i.path}:${i.issue}`),
+  };
 }
 
 export function createInitialSoulState(seedGenome: SoulState['naGenome']): SoulState {
-  return {
+  const state: SoulState = {
     cycleCount: 0,
     heresyThreshold: 0.78,
     internalizationScore: 0.5,
@@ -121,4 +132,7 @@ export function createInitialSoulState(seedGenome: SoulState['naGenome']): SoulS
     activeMasks: [{ identity: 'Seed', confidence: 0.65 }],
     naGenome: seedGenome,
   };
+
+  normalizeSoulState(state);
+  return state;
 }

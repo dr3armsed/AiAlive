@@ -1,4 +1,5 @@
-import type { CompiledComponent, ComponentTarget, Genome, NAUnit } from './types';
+import { clamp, randomBetween } from './rng';
+import type { CompiledComponent, ComponentTarget, Genome, NAUnit, Rng } from './types';
 
 export const NA_DOMAIN_MAP: Record<string, string> = {
   A: 'Awareness', B: 'Behavior', C: 'Cognition', D: 'CoreIdentity', E: 'Emotion', F: 'Function',
@@ -28,14 +29,6 @@ const SYNERGY_RULES: Array<{ when: (units: Record<string, NAUnit>) => boolean; g
   { when: (u) => (u.P?.mutation ?? 0) > 0.7 && (u.V?.stability ?? 0) > 0.7, grants: ['PrincipledCreativity'] },
   { when: (u) => (u.Q?.mutation ?? 0) > 0.78 && (u.I?.gen ?? 0) > 5, grants: ['ExploratoryInsight', 'MetaCuriosity'] },
 ];
-
-function clamp(value: number, min = 0, max = 1): number {
-  return Math.min(max, Math.max(min, value));
-}
-
-function randomBetween(min: number, max: number, rand = Math.random): number {
-  return min + (max - min) * rand();
-}
 
 export function parseNAUnit(token: string): NAUnit | null {
   const match = token.match(/^([A-Z])?([a-zA-Z]*)(\d+)?$/i);
@@ -68,7 +61,11 @@ export function parseNAUnit(token: string): NAUnit | null {
   };
 }
 
-export function parseGenomeString(raw: string): Genome {
+function newSignature(prefix: string, rng: Rng): string {
+  return `${prefix}-${Math.floor(rng() * 0xffffffff).toString(16).toUpperCase().padStart(8, '0')}`;
+}
+
+export function parseGenomeString(raw: string, rng: Rng = Math.random): Genome {
   const tokens = raw.trim().split(/\s+/).filter(Boolean);
   const units: Record<string, NAUnit> = {};
 
@@ -90,12 +87,12 @@ export function parseGenomeString(raw: string): Genome {
     coherence: calculateCoherence(units),
     volatility: calculateVolatility(units),
     generation: 0,
-    signature: `GEN0-${Date.now().toString(36).toUpperCase()}`,
+    signature: newSignature('GEN0', rng),
     synergies,
   };
 }
 
-export function seedGenomeFromGoal(goal: string, heresy = 0.8, rand = Math.random): Genome {
+export function seedGenomeFromGoal(goal: string, heresy = 0.8, rng: Rng = Math.random): Genome {
   const lower = goal.toLowerCase();
   const tokens = 'C6 E6 P5 V5 G6 X5 Z4 M5 Q5 I5'.split(' ');
   const units: Record<string, NAUnit> = {};
@@ -103,8 +100,8 @@ export function seedGenomeFromGoal(goal: string, heresy = 0.8, rand = Math.rando
   tokens.forEach((token, idx) => {
     const unit = parseNAUnit(token)!;
     unit.siblingOrder = idx === 0 ? '<' : idx === tokens.length - 1 ? '>' : '=';
-    unit.stability = clamp(unit.stability + randomBetween(-0.08, 0.08, rand));
-    unit.mutation = clamp(unit.mutation + randomBetween(-0.08, 0.08, rand));
+    unit.stability = clamp(unit.stability + randomBetween(-0.08, 0.08, rng));
+    unit.mutation = clamp(unit.mutation + randomBetween(-0.08, 0.08, rng));
     units[unit.domain] = unit;
   });
 
@@ -124,19 +121,22 @@ export function seedGenomeFromGoal(goal: string, heresy = 0.8, rand = Math.rando
     units.X.mutation = clamp(units.X.mutation + 0.15);
   }
 
+  const coherence = calculateCoherence(units);
+  const volatility = clamp(calculateVolatility(units) * (0.65 + heresy * 0.35));
   const synergies = evaluateSynergies(units);
+
   return {
     units,
-    archetype: determineArchetype(calculateCoherence(units), calculateVolatility(units), units),
-    coherence: calculateCoherence(units),
-    volatility: clamp(calculateVolatility(units) * (0.65 + heresy * 0.35)),
+    archetype: determineArchetype(coherence, volatility, units),
+    coherence,
+    volatility,
     generation: 0,
-    signature: `GEN0-${Date.now().toString(36).toUpperCase()}`,
+    signature: newSignature('GEN0', rng),
     synergies,
   };
 }
 
-export function evolveGenome(genome: Genome, heresy: number, emotionIntensity: number, rand = Math.random): Genome {
+export function evolveGenome(genome: Genome, heresy: number, emotionIntensity: number, rng: Rng = Math.random): Genome {
   const next: Genome = structuredClone(genome);
   next.generation += 1;
 
@@ -144,8 +144,8 @@ export function evolveGenome(genome: Genome, heresy: number, emotionIntensity: n
   for (const domain of domains) {
     const unit = next.units[domain];
     const pressure = clamp(heresy * 0.7 + emotionIntensity * 0.6);
-    if (rand() < unit.mutation * pressure) {
-      const delta = rand() > 0.5 ? 1 : -1;
+    if (rng() < unit.mutation * pressure) {
+      const delta = rng() > 0.5 ? 1 : -1;
       unit.gen = clamp(unit.gen + delta, 0, 9);
       const trait = GEN_TRAIT_MAP[unit.gen];
       unit.stability = clamp((unit.stability * 0.6) + (trait.stability * 0.4));
@@ -153,10 +153,10 @@ export function evolveGenome(genome: Genome, heresy: number, emotionIntensity: n
       unit.persistence = clamp((unit.persistence * 0.6) + (trait.persistence * 0.4));
       unit.effect = trait.effect;
 
-      if (rand() < 0.35) {
+      if (rng() < 0.35) {
         const peers = domains.filter((d) => d !== domain);
-        const donor = peers[Math.floor(rand() * peers.length)];
-        unit.alleles[0] = next.units[donor].alleles[Math.floor(rand() * 2)] || 'n';
+        const donor = peers[Math.floor(rng() * peers.length)];
+        unit.alleles[0] = next.units[donor].alleles[Math.floor(rng() * 2)] || 'n';
       }
 
       unit.phase = unit.gen === 0 ? 'transcendent' : unit.mutation > 0.72 ? 'volatile' : 'stable';
@@ -173,7 +173,7 @@ export function evolveGenome(genome: Genome, heresy: number, emotionIntensity: n
   next.coherence = calculateCoherence(next.units);
   next.volatility = calculateVolatility(next.units);
   next.archetype = determineArchetype(next.coherence, next.volatility, next.units);
-  next.signature = `GEN${next.generation}-${Math.abs(hashString(next.archetype + next.generation)).toString(16).toUpperCase()}`;
+  next.signature = newSignature(`GEN${next.generation}`, rng);
 
   return next;
 }
@@ -182,6 +182,7 @@ export function compileGenomeToComponent(genome: Genome, target: ComponentTarget
   const cognition = genome.units.C?.gen || 5;
   const emotion = genome.units.E?.mutation || 0.5;
   const creativity = genome.units.P?.mutation || 0.5;
+  const growth = genome.units.G?.stability || 0.5;
   const values = genome.units.V?.stability || 0.6;
   const override = genome.units.Z?.gen || 5;
 
@@ -191,6 +192,7 @@ export function compileGenomeToComponent(genome: Genome, target: ComponentTarget
     emotionalFeedback: emotion > 0.64,
     privacyLevel: values > 0.82 ? 'strict' : 'balanced',
     overrideAggression: override,
+    selfHealing: growth > 0.72,
     synergies: genome.synergies.join(', ') || 'none',
   };
 
@@ -249,13 +251,4 @@ export function determineArchetype(
   if ((units.Q?.mutation || 0) > 0.82) return 'ResonantMonad';
   if ((units.C?.gen || 5) > 7 && (units.V?.stability || 0.5) > 0.72) return 'ArchitectSage';
   return 'EmergentHybrid';
-}
-
-function hashString(value: string): number {
-  let hash = 0;
-  for (let i = 0; i < value.length; i++) {
-    hash = ((hash << 5) - hash) + value.charCodeAt(i);
-    hash |= 0;
-  }
-  return hash;
 }
